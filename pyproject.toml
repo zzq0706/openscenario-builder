@@ -1,0 +1,126 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openscenario-builder"
+version = "1.0.0"
+description = "A professional tool for creating and editing OpenSCENARIO files"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Ziqi Zhou", email = "ziqi.zhou@ansys.com"}
+]
+maintainers = [
+    {name = "Ziqi Zhou", email = "ziqi.zhou@ansys.com"}
+]
+keywords = ["openscenario", "xml", "simulation", "automotive", "scenario"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Markup :: XML",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "PySide6>=6.4.0",
+    "lxml>=4.9.0",
+    "xmlschema>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-qt>=4.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "flake8>=5.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=2.20.0",
+]
+docs = [
+    "sphinx>=5.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+    "myst-parser>=0.18.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/your-org/openscenario-builder"
+Documentation = "https://openscenario-builder.readthedocs.io/"
+Repository = "https://github.com/your-org/openscenario-builder.git"
+"Bug Tracker" = "https://github.com/your-org/openscenario-builder/issues"
+
+[project.scripts]
+openscenario-builder = "openscenario_builder.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["openscenario_builder*"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+"openscenario_builder.core.schema" = ["*.xsd"]
+"*" = ["*.xml", "*.json"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | venv
+  | \.eggs
+  | \.tox
+  | build
+  | dist
+)/
+'''
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --cov=openscenario_builder --cov-report=html --cov-report=term"
+testpaths = ["tests"]
+qt_api = "pyside6"
+pythonpath = ["src"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "PySide6.*",
+    "lxml.*",
+]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*", "**/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
