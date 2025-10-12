@@ -108,11 +108,11 @@ class MyPlugin(IElementPlugin):
         return []
 ```
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [OpenSCENARIO](https://www.asam.net/standards/detail/openscenario/) community
 - [Qt/PySide6](https://doc.qt.io/qtforpython/) team
