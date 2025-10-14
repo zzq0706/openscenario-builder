@@ -22,7 +22,6 @@ class IElement(Protocol):
     attrs: Dict[str, str]
     children: List['IElement']
     metadata: IElementMetadata
-    id: str
 
     def add_child(self, child: 'IElement') -> None:
         """Add a child element"""
@@ -84,10 +83,6 @@ class IElement(Protocol):
 
     def clone(self) -> 'IElement':
         """Create a deep copy of this element"""
-        ...
-
-    def find_element_by_id(self, element_id: str) -> Optional['IElement']:
-        """Find an element by its ID in the subtree"""
         ...
 
     def find_elements_by_tag(self, tag: str) -> List['IElement']:

@@ -8,7 +8,6 @@ from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass, field
 from xml.etree.ElementTree import Element as XMLElement, SubElement, tostring
 from xml.dom import minidom
-import uuid
 from datetime import datetime
 
 
@@ -35,7 +34,6 @@ class Element(IElement):
         self.attrs = attrs or {}
         self.children = children or []
         self.metadata = metadata or ElementMetadata()
-        self._id = str(uuid.uuid4())
 
     @property
     def id(self) -> str:
@@ -151,8 +149,7 @@ class Element(IElement):
                 "created_by": self.metadata.created_by,
                 "description": self.metadata.description,
                 "tags": self.metadata.tags
-            },
-            "id": self._id
+            }
         }
 
     @classmethod
@@ -171,7 +168,6 @@ class Element(IElement):
                 tags=data["metadata"]["tags"]
             )
         )
-        element._id = data.get("id", str(uuid.uuid4()))
 
         # Add children recursively
         for child_data in data.get("children", []):
@@ -198,18 +194,6 @@ class Element(IElement):
     def clone(self) -> 'Element':
         """Create a deep copy of this element"""
         return self.from_dict(self.to_dict())
-
-    def find_element_by_id(self, element_id: str) -> Optional['Element']:
-        """Find an element by its ID in the subtree"""
-        if self._id == element_id:
-            return self
-
-        for child in self.children:
-            result = child.find_element_by_id(element_id)
-            if result:
-                return result
-
-        return None
 
     def find_elements_by_tag(self, tag: str) -> List['Element']:
         """Find all elements with the specified tag in the subtree"""
