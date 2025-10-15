@@ -60,7 +60,7 @@ class IElementPlugin(IBasePlugin):
         """Return list of allowed child element names"""
         pass
 
-    def validate_element(self, element: IElement) -> List[str]:
+    def validate(self, element: IElement) -> List[str]:
         """Validate an element instance, return list of errors"""
         return []
 
@@ -83,7 +83,7 @@ class IValidatorPlugin(IBasePlugin):
         pass
 
     @abstractmethod
-    def validate_element(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
+    def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
         """Validate an element, optionally against the schema, return list of errors"""
         pass
 

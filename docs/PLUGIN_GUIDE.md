@@ -94,7 +94,7 @@ class MyCustomElementPlugin(IElementPlugin):
         """Description for UI"""
         return "A custom element for special purposes"
 
-    def validate_element(self, element) -> List[str]:
+    def validate(self, element) -> List[str]:
         """Custom validation logic"""
         errors = []
 
@@ -149,7 +149,7 @@ class MyValidatorPlugin(IValidatorPlugin):
         """Validator name"""
         return "My Custom Validator"
 
-    def validate_element(self, element: IElement,
+    def validate(self, element: IElement,
                         schema_info: Optional[ISchemaInfo] = None) -> List[str]:
         """
         Validate element and return list of error messages.
@@ -171,7 +171,7 @@ class MyValidatorPlugin(IValidatorPlugin):
 
         # Recursively validate children
         for child in element.children:
-            errors.extend(self.validate_element(child, schema_info))
+            errors.extend(self.validate(child, schema_info))
 
         return errors
 ```
@@ -394,7 +394,7 @@ plugin = MyValidatorPlugin()
 element = Element("OpenSCENARIO")
 
 # Validate
-errors = plugin.validate_element(element)
+errors = plugin.validate(element)
 print(f"Validation errors: {errors}")
 ```
 

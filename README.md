@@ -103,7 +103,7 @@ class MyPlugin(IElementPlugin):
     def get_element_name(self) -> str:
         return "MyElement"
 
-    def validate_element(self, element) -> List[str]:
+    def validate(self, element) -> List[str]:
         # Custom validation
         return []
 ```

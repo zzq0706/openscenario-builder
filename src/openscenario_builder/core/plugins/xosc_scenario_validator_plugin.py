@@ -40,7 +40,7 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
             tags=["validation", "schema", "xosc"]
         )
 
-    def validate_element(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
+        def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
         """Main validation method that validates the entire scenario"""
         if schema_info is None:
             return ["CONFIGURATION_ERROR: Schema information required for XOSC validation. Fix: Ensure OpenSCENARIO schema is properly loaded before validation."]
