@@ -11,7 +11,7 @@ try:
 except ImportError:
     # Fallback for when loaded directly by plugin manager
     from openscenario_builder.core.plugins.plugin_metadata import PluginMetadata
-from openscenario_builder.interfaces import IValidatorPlugin, IElement, ISchemaInfo, IAttributeDefinition, IGroupDefinition
+from openscenario_builder.interfaces import IValidatorPlugin, IElement, ISchemaInfo, IAttributeDefinition, IGroupDefinition, IElementDefinition
 
 
 class XoscScenarioValidatorPlugin(IValidatorPlugin):
@@ -40,7 +40,7 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
             tags=["validation", "schema", "xosc"]
         )
 
-        def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
+    def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
         """Main validation method that validates the entire scenario"""
         if schema_info is None:
             return ["CONFIGURATION_ERROR: Schema information required for XOSC validation. Fix: Ensure OpenSCENARIO schema is properly loaded before validation."]
@@ -99,13 +99,13 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
 
         return errors
 
-    def _validate_element_attributes(self, element: IElement, element_def: Dict[str, Any], simple_type_definitions: Dict[str, List[str]]) -> List[str]:
+    def _validate_element_attributes(self, element: IElement, element_def: IElementDefinition, simple_type_definitions: Dict[str, List[str]]) -> List[str]:
         """Validate element attributes against schema definition"""
         errors = []
         # Check for unknown attributes
         for attr_name in element.attrs.keys():
-            if not any(attr["name"] == attr_name for attr in element_def.attributes):
-                valid_attrs = [attr["name"] for attr in element_def.attributes]
+            if not any(attr.name == attr_name for attr in element_def.attributes):
+                valid_attrs = [attr.name for attr in element_def.attributes]
 
                 error_msg = f"ATTRIBUTE_ERROR: Unknown attribute '{attr_name}' for element '{element.tag}'."
                 error_msg += f" Valid attributes for '{element.tag}': {', '.join(valid_attrs)}."
@@ -115,14 +115,12 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
 
         # Validate attribute values and check required attributes
         for attr_def in element_def.attributes:
-            # Type cast to IAttributeDefinition for better type safety
-            attr_def_typed: IAttributeDefinition = attr_def
-            attr_name = attr_def_typed["name"]
+            attr_name = attr_def.name
             attr_value = element.attrs.get(attr_name)
 
             # Check required attributes
-            if attr_def_typed.get("required", False) and not self._is_valid_attribute_value(attr_value):
-                attr_type = attr_def_typed.get("type", "string")
+            if attr_def.required and not self._is_valid_attribute_value(attr_value or ""):
+                attr_type = attr_def.type
                 error_msg = f"REQUIRED_ATTRIBUTE_ERROR: Required attribute '{attr_name}' is missing, empty, or contains only whitespace for element '{element.tag}'."
                 error_msg += f" Expected type: {attr_type}."
                 error_msg += f" Fix: Add '{attr_name}=\"[appropriate_value]\"' to the '{element.tag}' element."
@@ -130,8 +128,8 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
                 continue
 
             # Validate attribute type if value exists and is valid
-            if self._is_valid_attribute_value(attr_value):
-                attr_type = attr_def_typed.get("type", "string")
+            if attr_value and self._is_valid_attribute_value(attr_value):
+                attr_type = attr_def.type
                 if not self._validate_attribute_type(attr_value, attr_type):
                     if attr_value.startswith('$'):
                         continue
@@ -167,7 +165,7 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
 
         return errors
 
-    def _validate_element_children(self, element: IElement, element_def: Dict[str, Any], schema_info: ISchemaInfo) -> List[str]:
+    def _validate_element_children(self, element: IElement, element_def: IElementDefinition, schema_info: ISchemaInfo) -> List[str]:
         """Validate element children against schema definition"""
         errors = []
 

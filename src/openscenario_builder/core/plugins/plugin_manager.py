@@ -252,9 +252,8 @@ class PluginManager:
         """Validate a scenario using all validator plugins"""
         errors = []
         for validator in self.validator_plugins.values():
-
             try:
-                    validator_errors = validator.validate(
+                validator_errors = validator.validate(
                     root_element, schema_info)
                 errors.extend(validator_errors)
                 print(f"validator: {validator.get_name()}")

@@ -3,21 +3,61 @@ Plugin interface definitions for OpenSCENARIO Builder
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional, Protocol
+from typing import Dict, List, Any, Optional
 from .model import IElement
 from .schema import ISchemaInfo
 
 
-class IPluginMetadata(Protocol):
-    """Protocol for plugin metadata structure"""
-    name: str
-    version: str
-    description: str
-    author: str
-    license: str
-    homepage: str
-    dependencies: Optional[List[str]]
-    tags: Optional[List[str]]
+class IPluginMetadata(ABC):
+    """Abstract base class for plugin metadata structure"""
+    
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """Plugin name"""
+        pass
+    
+    @property
+    @abstractmethod
+    def version(self) -> str:
+        """Plugin version"""
+        pass
+    
+    @property
+    @abstractmethod
+    def description(self) -> str:
+        """Plugin description"""
+        pass
+    
+    @property
+    @abstractmethod
+    def author(self) -> str:
+        """Plugin author"""
+        pass
+    
+    @property
+    @abstractmethod
+    def license(self) -> str:
+        """Plugin license"""
+        pass
+    
+    @property
+    @abstractmethod
+    def homepage(self) -> str:
+        """Plugin homepage"""
+        pass
+    
+    @property
+    @abstractmethod
+    def dependencies(self) -> Optional[List[str]]:
+        """Plugin dependencies"""
+        pass
+    
+    @property
+    @abstractmethod
+    def tags(self) -> Optional[List[str]]:
+        """Plugin tags"""
+        pass
 
 
 class IBasePlugin(ABC):
@@ -59,6 +99,10 @@ class IElementPlugin(IBasePlugin):
     def get_allowed_children(self) -> List[str]:
         """Return list of allowed child element names"""
         pass
+
+    def get_category(self) -> str:
+        """Return the category for UI grouping"""
+        return "Custom"
 
     def validate(self, element: IElement) -> List[str]:
         """Validate an element instance, return list of errors"""
