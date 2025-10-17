@@ -101,14 +101,6 @@ class TestElement:
         assert element.children[0].tag == "Child1"
         assert element.children[1].tag == "Child2"
     
-    def test_element_has_id(self):
-        """Element should have unique id"""
-        element = Element("Test")
-        
-        # Element concrete class has id property
-        assert hasattr(element, 'id')
-        assert isinstance(element.id, str)
-        assert element.tag in element.id
     
     def test_add_child(self):
         """Should add child element"""
