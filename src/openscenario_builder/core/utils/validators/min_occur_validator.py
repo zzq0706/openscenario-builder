@@ -1,47 +1,14 @@
 """
-XOSC Minimum Occurrence Validator Plugin for OpenSCENARIO Builder
+XOSC Minimum Occurrence Validator
 Validates minimum occurrence constraints for elements in the scenario
 """
 
 from typing import List, Optional
-try:
-    from .plugin_metadata import PluginMetadata
-except ImportError:
-    # Fallback for when loaded directly by plugin manager
-    from openscenario_builder.core.plugins.plugin_metadata import PluginMetadata
-from openscenario_builder.interfaces import IValidatorPlugin, IElement, ISchemaInfo
+from openscenario_builder.interfaces import IElement, ISchemaInfo
 
 
-class XoscMinOccurValidatorPlugin(IValidatorPlugin):
-    """XOSC Minimum Occurrence Validator Plugin - Validates minimum occurrence constraints"""
-
-    def __init__(self):
-        self._activated = True  # Default to activated
-        self._min_occur_map = {}
-
-    @property
-    def activated(self) -> bool:
-        """Whether this plugin is activated and should be loaded"""
-        return self._activated
-
-    @activated.setter
-    def activated(self, value: bool) -> None:
-        """Set the activation state of this plugin"""
-        self._activated = value
-
-    @property
-    def metadata(self) -> PluginMetadata:
-        return PluginMetadata(
-            name="XOSC Minimum Occurrence Validator",
-            version="1.0.0",
-            description="Validates minimum occurrence constraints for elements in OpenSCENARIO files",
-            author="Ziqi Zhou",
-            tags=["validation", "occurrence", "xosc"]
-        )
-
-    def get_name(self) -> str:
-        """Get the validator name"""
-        return "XOSC Minimum Occurrence Validator"
+class XoscMinOccurValidator:
+    """XOSC Minimum Occurrence Validator - Validates minimum occurrence constraints"""
 
     def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
         """Validate minimum occurrence constraints for the element and its children
@@ -263,7 +230,7 @@ class XoscMinOccurValidatorPlugin(IValidatorPlugin):
             return (f"OCCURRENCE_ERROR: Missing required element '{element_name}' at path '{path}'. "
                     f"This element is mandatory and must be present exactly once. "
                     f"Fix: Add the '{element_name}' element to satisfy the requirement.")
-        elif required_count > 1:
+        else:
             return (f"OCCURRENCE_ERROR: Insufficient occurrences of element '{element_name}' at path '{path}'. "
                     f"Found {actual_count} instances but {required_count} are required. "
                     f"Fix: Add {required_count - actual_count} more instance(s) of '{element_name}' to meet the requirement.")
