@@ -89,7 +89,7 @@ Check out the `examples/` directory for more:
 python examples/create_simple_scenario.py
 
 # Validate a scenario
-python examples/validate_scenario.py scenario.xosc src/openscenario_builder/core/schema/OpenSCENARIO_v1_3.xsd
+python examples/validate_scenario.py scenario.xosc schemas/OpenSCENARIO_v1_3.xsd
 ```
 
 ## Plugin System

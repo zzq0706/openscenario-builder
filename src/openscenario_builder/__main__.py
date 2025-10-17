@@ -28,9 +28,9 @@ def find_schema_file() -> str:
     """Find the OpenSCENARIO schema file"""
     # Look in various locations
     possible_paths = [
-        "src/openscenario_builder/core/schema/OpenSCENARIO_v1_3.xsd",
-        "core/schema/OpenSCENARIO_v1_3.xsd",
-        "schemas/OpenSCENARIO_v1_3.xsd",
+        "schemas/OpenSCENARIO_v1_3.xsd",  # Recommended location
+        "src/openscenario_builder/core/schema/OpenSCENARIO_v1_3.xsd",  # Legacy location
+
     ]
 
     for path in possible_paths:

@@ -650,8 +650,15 @@ if __name__ == "__main__":
     from pathlib import Path
 
     # Find the schema file relative to the current file
+    # Try to find the schema file
+    # First try: schemas/ directory at project root (recommended location)
     current_dir = Path(__file__).parent
-    schema_path = current_dir / "OpenSCENARIO_v1_3.xsd"
+    project_root = current_dir.parent.parent.parent  # Go up to project root
+    schema_path = project_root / "schemas" / "OpenSCENARIO_v1_3.xsd"
+    
+    # Fallback: old location in src/
+    if not schema_path.exists():
+        schema_path = current_dir / "OpenSCENARIO_v1_3.xsd"
 
     if not schema_path.exists():
         print(f"Schema file not found at: {schema_path}")
