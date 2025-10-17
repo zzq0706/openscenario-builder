@@ -77,7 +77,7 @@ class TestElementBuilder:
             .attr("name", "TestParent")
             .build())
         
-        assert element.name == "Parent"
+        assert element.tag == "Parent"
         assert element.get_attribute("name") == "TestParent"
     
     def test_build_element_with_multiple_attributes(self, simple_schema):
@@ -119,7 +119,7 @@ class TestElementBuilder:
             .build())
         
         assert len(element.children) == 1
-        assert element.children[0].name == "Child"
+        assert element.children[0].tag == "Child"
     
     def test_build_nested_elements(self, simple_schema):
         """Should build nested elements fluently"""
@@ -139,7 +139,7 @@ class TestElementBuilder:
             .child(child)
             .build())
         
-        assert parent.name == "Parent"
+        assert parent.tag == "Parent"
         assert len(parent.children) == 1
         assert parent.children[0].get_attribute("id") == "1"
     
@@ -183,7 +183,7 @@ class TestElementBuilder:
         """Should validate in strict mode"""
         builder = ElementBuilder(simple_schema, strict=True)
         
-        with pytest.raises(ValueError, match="Missing required attribute"):
+        with pytest.raises(ValueError, match="missing required attributes"):
             builder.element("Parent").build()
     
     def test_permissive_mode_allows_invalid(self, simple_schema):
@@ -193,7 +193,8 @@ class TestElementBuilder:
         element = builder.element("Parent").build()
         
         assert element is not None
-        assert len(builder.factory.validation_errors) > 0
+        errors = builder.factory.get_validation_errors(element)
+        assert len(errors) > 0
 
 
 class TestElementBuilderEdgeCases:
@@ -210,7 +211,7 @@ class TestElementBuilderEdgeCases:
         )
         builder = ElementBuilder(schema_info)
         
-        with pytest.raises(ValueError, match="No element type specified"):
+        with pytest.raises(ValueError, match="tag must be set"):
             builder.build()
     
     def test_attrs_overwrites_previous_attrs(self):
@@ -251,7 +252,7 @@ class TestElementBuilderEdgeCases:
         element2 = builder.element("Test").build()
         
         # Second element should not have attr1
-        assert element2.get_attribute("attr1") is None
+        assert not element2.has_attribute("attr1")
 
 
 class TestElementBuilderChaining:
