@@ -232,11 +232,17 @@ class TestXSDParser:
     @pytest.fixture
     def schema_path(self):
         """Get path to test schema file"""
-        # Use the actual OpenSCENARIO schema from the project
-        path = Path(__file__).parent.parent / "src" / "openscenario_builder" / "core" / "schema" / "OpenSCENARIO_v1_3.xsd"
-        if path.exists():
-            return str(path)
-        pytest.skip("OpenSCENARIO schema file not found")
+        # Use the OpenSCENARIO schema from the schemas/ directory
+        # From: tests/unit/core/schema/test_parser.py
+        # To: project_root/schemas/OpenSCENARIO_v1_3.xsd
+        # Need 5 .parent calls: schema -> core -> unit -> tests -> project_root
+        test_file = Path(__file__).resolve()
+        project_root = test_file.parent.parent.parent.parent.parent
+        schema_file = project_root / "schemas" / "OpenSCENARIO_v1_3.xsd"
+        
+        if schema_file.exists():
+            return str(schema_file)
+        pytest.skip(f"OpenSCENARIO schema file not found at {schema_file}")
     
     def test_parser_initialization(self, schema_path):
         """Should initialize parser with XSD path"""
@@ -269,10 +275,16 @@ class TestSchemaIntegration:
     @pytest.fixture
     def schema_info(self):
         """Get parsed schema info"""
-        schema_path = Path(__file__).parent.parent / "src" / "openscenario_builder" / "core" / "schema" / "OpenSCENARIO_v1_3.xsd"
-        if not schema_path.exists():
-            pytest.skip("OpenSCENARIO schema file not found")
-        return parse_openscenario_schema(str(schema_path))
+        # From: tests/unit/core/schema/test_parser.py
+        # To: project_root/schemas/OpenSCENARIO_v1_3.xsd
+        # Need 5 .parent calls: schema -> core -> unit -> tests -> project_root
+        test_file = Path(__file__).resolve()
+        project_root = test_file.parent.parent.parent.parent.parent
+        schema_file = project_root / "schemas" / "OpenSCENARIO_v1_3.xsd"
+        
+        if not schema_file.exists():
+            pytest.skip(f"OpenSCENARIO schema file not found at {schema_file}")
+        return parse_openscenario_schema(str(schema_file))
     
     def test_schema_has_elements(self, schema_info):
         """Parsed schema should have elements"""

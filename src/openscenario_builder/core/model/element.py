@@ -70,7 +70,6 @@ class Element(IElement):
         self._attrs = attrs or {}
         self._children: List[IElement] = children or []
         self._metadata = metadata or ElementMetadata()
-        self._id = f"{tag}_{id(self)}"
     
     @property
     def tag(self) -> str:
@@ -91,11 +90,6 @@ class Element(IElement):
     def metadata(self) -> IElementMetadata:
         """Element metadata"""
         return self._metadata
-
-    @property
-    def id(self) -> str:
-        """Unique identifier for this element"""
-        return self._id
 
     def add_child(self, child: IElement) -> None:
         """Add a child element"""

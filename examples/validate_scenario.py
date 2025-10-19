@@ -61,7 +61,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: python validate_scenario.py <scenario.xosc> <schema.xsd>")
         print("\nExample:")
-        print("  python validate_scenario.py simple_scenario.xosc src/openscenario_builder/core/schema/OpenSCENARIO_v1_3.xsd")
+        print("  python validate_scenario.py simple_scenario.xosc schemas/OpenSCENARIO_v1_3.xsd")
         sys.exit(1)
 
     scenario_file = sys.argv[1]
