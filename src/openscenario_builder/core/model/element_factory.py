@@ -7,31 +7,22 @@ from typing import Dict, List, Optional, Set, Any
 from openscenario_builder.interfaces import ISchemaInfo, IElement, IElementDefinition, IChildElementInfo
 from openscenario_builder.core.model.element import Element
 
+from openscenario_builder.core.utils.validators import (
+    XoscSchemaStructureValidator,
+    XoscDataTypeValidator,
+    XoscStructureValidator,
+)
+
 
 class ElementFactory:
     """
     Factory for creating schema-validated elements.
     
-    This factory ensures that elements are created with:
-    - Valid element names (must exist in schema)
-    - Valid attributes (must be defined in schema)
-    - Required attributes present (at creation or marked for later)
-    - Type-correct attribute values
-    
-    Example:
-        >>> factory = ElementFactory(schema_info)
-        >>> # Strict mode - raises exception on invalid element
-        >>> header = factory.create("FileHeader", {
-        ...     "revMajor": "1",
-        ...     "revMinor": "3",
-        ...     "date": "2025-10-12T00:00:00",
-        ...     "description": "My scenario",
-        ...     "author": "John Doe"
-        ... })
-        >>> 
-        >>> # Permissive mode - allows creation but tracks errors
-        >>> element = factory.create("InvalidElement", strict=False)
-        >>> errors = factory.get_validation_errors(element)
+    This factory reuses existing validators from core.utils.validators to ensure
+    consistent validation across the codebase:
+    - XoscSchemaStructureValidator: element structure, attributes, children
+    - XoscDataTypeValidator: data types and enumerations
+    - XoscStructureValidator: basic document structure
     """
     
     def __init__(self, schema_info: ISchemaInfo, strict: bool = True):
@@ -45,8 +36,13 @@ class ElementFactory:
         """
         self.schema_info = schema_info
         self.strict = strict
-        # Use element's tag as key since id is not in IElement interface
-        self._validation_errors: Dict[str, List[str]] = {}
+        # Track validation errors using element object as key
+        self._validation_errors: Dict[IElement, List[str]] = {}
+        
+        # Initialize validators (reuse existing validation logic)
+        self._schema_validator = XoscSchemaStructureValidator()
+        self._datatype_validator = XoscDataTypeValidator()
+        self._structure_validator = XoscStructureValidator()
     
     def create(
         self,
@@ -56,7 +52,7 @@ class ElementFactory:
         strict: Optional[bool] = None
     ) -> IElement:
         """
-        Create an element with schema validation.
+        Create an element with schema validation using existing validators.
         
         Args:
             tag: Element tag name
@@ -74,29 +70,31 @@ class ElementFactory:
         attrs = attrs or {}
         children = children or []
         
-        errors = []
-        
-        # Validate element exists in schema
-        element_def = self.schema_info.elements.get(tag)
-        if not element_def:
-            error = f"Element '{tag}' is not defined in schema"
-            errors.append(error)
-            if use_strict:
-                raise ValueError(error)
-        
-        # Validate attributes if element definition exists
-        if element_def:
-            attr_errors = self._validate_attributes(tag, attrs, element_def)
-            errors.extend(attr_errors)
-            if use_strict and attr_errors:
-                raise ValueError(f"Invalid attributes for '{tag}': {', '.join(attr_errors)}")
-        
-        # Create the element
+        # Create the element first
         element = Element(tag, attrs, children)
         
-        # Track validation errors for non-strict mode (using id from Element concrete class)
-        if errors and hasattr(element, 'id'):
-            self._validation_errors[element.id] = errors
+        # Reuse existing validators instead of custom validation logic
+        errors = []
+        
+        # Schema structure validation (element exists, valid attributes, etc.)
+        schema_errors = self._schema_validator.validate(element, self.schema_info)
+        errors.extend(schema_errors)
+        
+        # Data type validation (type checking, enumerations)
+        datatype_errors = self._datatype_validator.validate(element, self.schema_info)
+        errors.extend(datatype_errors)
+        
+        # Basic structure validation
+        structure_errors = self._structure_validator.validate(element, self.schema_info)
+        errors.extend(structure_errors)
+        
+        # Handle errors based on strict mode
+        if errors:
+            if use_strict:
+                raise ValueError(f"Validation failed for '{tag}': {'; '.join(errors)}")
+            else:
+                # Track validation errors using element object as key
+                self._validation_errors[element] = errors
         
         return element
     
@@ -256,113 +254,7 @@ class ElementFactory:
         Returns:
             List of validation errors
         """
-        # Use element's id if available (from Element concrete class)
-        element_id = getattr(element, 'id', None)
-        if element_id:
-            return self._validation_errors.get(element_id, [])
-        return []
-    
-    def _validate_attributes(
-        self,
-        tag: str,
-        attrs: Dict[str, str],
-        element_def: IElementDefinition
-    ) -> List[str]:
-        """
-        Validate element attributes against schema definition.
-        
-        Args:
-            tag: Element tag name
-            attrs: Attributes to validate
-            element_def: Element definition from schema
-        
-        Returns:
-            List of validation errors
-        """
-        errors = []
-        
-        # Get valid attribute names
-        valid_attr_names = {attr.name for attr in element_def.attributes}
-        
-        # Check for invalid attributes
-        for attr_name in attrs.keys():
-            if attr_name not in valid_attr_names:
-                errors.append(
-                    f"Attribute '{attr_name}' is not valid for element '{tag}'. "
-                    f"Valid attributes: {', '.join(sorted(valid_attr_names))}"
-                )
-        
-        # Check for missing required attributes (warning, not error at creation)
-        required_attrs = {attr.name for attr in element_def.attributes if attr.required}
-        missing_required = required_attrs - set(attrs.keys())
-        if missing_required:
-            errors.append(
-                f"Element '{tag}' is missing required attributes: {', '.join(sorted(missing_required))}"
-            )
-        
-        # Validate attribute value types (basic validation)
-        for attr_def in element_def.attributes:
-            if attr_def.name in attrs:
-                value = attrs[attr_def.name]
-                type_errors = self._validate_attribute_type(
-                    attr_def.name, value, attr_def.type
-                )
-                errors.extend(type_errors)
-        
-        return errors
-    
-    def _validate_attribute_type(
-        self,
-        attr_name: str,
-        value: str,
-        expected_type: str
-    ) -> List[str]:
-        """
-        Validate attribute value type.
-        
-        Args:
-            attr_name: Attribute name
-            value: Attribute value
-            expected_type: Expected type from schema
-        
-        Returns:
-            List of validation errors
-        """
-        errors = []
-        
-        # Basic type validation
-        if expected_type == "xs:double" or expected_type == "double":
-            try:
-                float(value)
-            except ValueError:
-                errors.append(
-                    f"Attribute '{attr_name}' expects type 'double', got '{value}'"
-                )
-        
-        elif expected_type == "xs:int" or expected_type == "int":
-            try:
-                int(value)
-            except ValueError:
-                errors.append(
-                    f"Attribute '{attr_name}' expects type 'int', got '{value}'"
-                )
-        
-        elif expected_type == "xs:boolean" or expected_type == "boolean":
-            if value.lower() not in ["true", "false", "1", "0"]:
-                errors.append(
-                    f"Attribute '{attr_name}' expects type 'boolean', got '{value}'"
-                )
-        
-        # Check enumeration values
-        if expected_type in self.schema_info.simple_type_definitions:
-            valid_values = self.schema_info.simple_type_definitions[expected_type]
-            if valid_values and value not in valid_values:
-                errors.append(
-                    f"Attribute '{attr_name}' value '{value}' not in allowed values: "
-                    f"{', '.join(valid_values)}"
-                )
-        
-        return errors
+        return self._validation_errors.get(element, [])
     
     def get_element_info(self, tag: str) -> Optional[Dict[str, Any]]:
         """

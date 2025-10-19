@@ -13,18 +13,9 @@ class ElementBuilder:
     Fluent builder for creating schema-validated elements.
     
     This builder provides a chainable API for constructing elements
-    with validation at each step.
+    with validation at each step, including child element validation.
     
-    Example:
-        >>> builder = ElementBuilder(schema_info)
-        >>> element = (builder
-        ...     .element("FileHeader")
-        ...     .attr("revMajor", "1")
-        ...     .attr("revMinor", "3")
-        ...     .attr("date", "2025-10-12T00:00:00")
-        ...     .attr("description", "My scenario")
-        ...     .attr("author", "John Doe")
-        ...     .build())
+
     """
     
     def __init__(self, schema_info: ISchemaInfo, strict: bool = True):
@@ -82,27 +73,46 @@ class ElementBuilder:
     
     def child(self, child: IElement) -> 'ElementBuilder':
         """
-        Add a child element.
+        Add a child element with validation.
         
         Args:
             child: Child element to add
         
         Returns:
             Self for chaining
+        
+        Raises:
+            ValueError: If strict mode and child is not allowed for current element
         """
+        # Validate child addition if tag is set and factory is in strict mode
+        if self._tag and self.factory.strict:
+            errors = self.factory.validate_child_addition(self._tag, child.tag)
+            if errors:
+                raise ValueError(f"Cannot add child '{child.tag}' to '{self._tag}': {'; '.join(errors)}")
+        
         self._children.append(child)
         return self
     
     def children(self, children: List[IElement]) -> 'ElementBuilder':
         """
-        Add multiple children at once.
+        Add multiple children at once with validation.
         
         Args:
             children: List of child elements
         
         Returns:
             Self for chaining
+        
+        Raises:
+            ValueError: If strict mode and any child is not allowed for current element
         """
+        # Validate each child if tag is set and factory is in strict mode
+        if self._tag and self.factory.strict:
+            for child in children:
+                errors = self.factory.validate_child_addition(self._tag, child.tag)
+                if errors:
+                    raise ValueError(f"Cannot add child '{child.tag}' to '{self._tag}': {'; '.join(errors)}")
+        
         self._children.extend(children)
         return self
     
@@ -206,4 +216,23 @@ class ElementBuilder:
             raise ValueError("Element tag must be set")
         
         return self.factory.get_allowed_children(self._tag)
+    
+    def is_child_allowed(self, child_tag: str) -> bool:
+        """
+        Check if a child element type is allowed for the current element.
+        
+        Args:
+            child_tag: Tag name of the child element to check
+        
+        Returns:
+            True if child is allowed, False otherwise
+        
+        Raises:
+            ValueError: If tag not set
+        """
+        if not self._tag:
+            raise ValueError("Element tag must be set")
+        
+        errors = self.factory.validate_child_addition(self._tag, child_tag)
+        return len(errors) == 0
 

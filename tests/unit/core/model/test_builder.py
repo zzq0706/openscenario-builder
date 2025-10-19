@@ -183,7 +183,7 @@ class TestElementBuilder:
         """Should validate in strict mode"""
         builder = ElementBuilder(simple_schema, strict=True)
         
-        with pytest.raises(ValueError, match="missing required attributes"):
+        with pytest.raises(ValueError, match="REQUIRED_ATTRIBUTE_ERROR"):
             builder.element("Parent").build()
     
     def test_permissive_mode_allows_invalid(self, simple_schema):
@@ -195,6 +195,85 @@ class TestElementBuilder:
         assert element is not None
         errors = builder.factory.get_validation_errors(element)
         assert len(errors) > 0
+    
+    def test_child_validation_strict_mode_valid(self, simple_schema):
+        """Should allow valid child in strict mode"""
+        builder = ElementBuilder(simple_schema, strict=True)
+        
+        child = Element("Child", {"id": "TestChild"})
+        result = builder.element("Parent").attr("name", "TestParent").child(child)
+        
+        assert result is builder
+        element = result.build()
+        assert len(element.children) == 1
+        assert element.children[0].tag == "Child"
+    
+    def test_child_validation_strict_mode_invalid(self, simple_schema):
+        """Should reject invalid child in strict mode"""
+        builder = ElementBuilder(simple_schema, strict=True)
+        
+        # Try to add Parent as child of Child (not allowed)
+        invalid_child = Element("Parent", {"name": "Invalid"})
+        
+        with pytest.raises(ValueError, match="Cannot add child 'Parent' to 'Child'"):
+            builder.element("Child").attr("id", "Test").child(invalid_child)
+    
+    def test_children_validation_strict_mode_valid(self, simple_schema):
+        """Should allow multiple valid children in strict mode"""
+        builder = ElementBuilder(simple_schema, strict=True)
+        
+        children = [
+            Element("Child", {"id": "Child1"}),
+            Element("Child", {"id": "Child2"}),
+        ]
+        
+        element = (builder
+            .element("Parent")
+            .attr("name", "TestParent")
+            .children(children)
+            .build())
+        
+        assert len(element.children) == 2
+    
+    def test_children_validation_strict_mode_invalid(self, simple_schema):
+        """Should reject if any child is invalid in strict mode"""
+        builder = ElementBuilder(simple_schema, strict=True)
+        
+        children = [
+            Element("Child", {"id": "Valid"}),
+            Element("Parent", {"name": "Invalid"}),  # Not allowed as child of Parent
+        ]
+        
+        # Should reject because Parent cannot be a child of Parent
+        with pytest.raises(ValueError, match="Cannot add child 'Parent' to 'Parent'"):
+            builder.element("Parent").attr("name", "Test").children(children)
+    
+    def test_child_validation_permissive_mode(self, simple_schema):
+        """Should allow invalid child in permissive mode"""
+        builder = ElementBuilder(simple_schema, strict=False)
+        
+        invalid_child = Element("Parent", {"name": "Invalid"})
+        
+        # Should not raise in permissive mode
+        element = (builder
+            .element("Child")
+            .attr("id", "Test")
+            .child(invalid_child)
+            .build())
+        
+        assert len(element.children) == 1
+    
+    def test_is_child_allowed(self, simple_schema):
+        """Should correctly check if child is allowed"""
+        builder = ElementBuilder(simple_schema)
+        
+        builder.element("Parent")
+        assert builder.is_child_allowed("Child") is True
+        assert builder.is_child_allowed("Parent") is False
+        
+        builder.element("Child")
+        assert builder.is_child_allowed("Parent") is False
+        assert builder.is_child_allowed("Child") is False
 
 
 class TestElementBuilderEdgeCases:
@@ -312,12 +391,31 @@ class TestElementBuilderChaining:
             element_hierarchy={},
             simple_type_definitions={}
         )
-        builder = ElementBuilder(schema_info)
+        # Use non-strict mode for empty schema
+        builder = ElementBuilder(schema_info, strict=False)
         child_elem = Element("Child")
         
         result = builder.element("Test").child(child_elem)
         
         assert result is builder
+
+
+class TestElementBuilderEdgeCases:
+    """Test edge cases and error conditions"""
+    
+    def test_is_child_allowed_without_element(self):
+        """Should raise error if checking child without setting element"""
+        schema_info = SchemaInfo(
+            elements={},
+            groups={},
+            root_elements=[],
+            element_hierarchy={},
+            simple_type_definitions={}
+        )
+        builder = ElementBuilder(schema_info)
+        
+        with pytest.raises(ValueError, match="tag must be set"):
+            builder.is_child_allowed("Child")
 
 
 if __name__ == '__main__':

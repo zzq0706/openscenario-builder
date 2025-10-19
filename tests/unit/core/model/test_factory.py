@@ -84,7 +84,7 @@ class TestElementFactory:
         """Should raise error in strict mode when required attribute missing"""
         factory = ElementFactory(simple_schema, strict=True)
         
-        with pytest.raises(ValueError, match="missing required attributes.*name"):
+        with pytest.raises(ValueError, match="REQUIRED_ATTRIBUTE_ERROR.*name"):
             factory.create("Parent", {})
     
     def test_permissive_mode_allows_missing_required_attribute(self, simple_schema):
@@ -102,7 +102,7 @@ class TestElementFactory:
         """Should raise error in strict mode for unknown attribute"""
         factory = ElementFactory(simple_schema, strict=True)
         
-        with pytest.raises(ValueError, match="Invalid attributes"):
+        with pytest.raises(ValueError, match="ATTRIBUTE_ERROR.*unknown"):
             factory.create("Parent", {"name": "Test", "unknown": "value"})
     
     def test_permissive_mode_allows_unknown_attribute(self, simple_schema):
@@ -127,7 +127,7 @@ class TestElementFactory:
         """Should raise error for unknown element in strict mode"""
         factory = ElementFactory(simple_schema, strict=True)
         
-        with pytest.raises(ValueError, match="not defined in schema"):
+        with pytest.raises(ValueError, match="SCHEMA_ERROR.*Unknown"):
             factory.create("Unknown", {})
     
     def test_create_unknown_element_in_permissive_mode(self, simple_schema):
