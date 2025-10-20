@@ -14,33 +14,6 @@ A professional, extensible tool for creating and editing OpenSCENARIO files with
 - **Real-time Validation**: Comprehensive schema validation with detailed error messages
 - **Cross-Platform**: Works on Windows, macOS, and Linux
 
-## Architecture
-
-```
-openscenario-builder/
-├── src/
-│   └── openscenario_builder/     # Main package
-│       ├── __init__.py
-│       ├── __main__.py           # Entry point
-│       ├── interfaces/           # Interface definitions (contracts)
-│       ├── core/                 # Core implementation
-│       │   ├── schema/           # XSD schema parsing
-│       │   ├── model/            # Element data models
-│       │   └── plugins/          # Plugin system
-│       └── ui/                   # User interface
-│           └── qt/               # Qt-based UI components
-├── tests/                        # Test suite
-├── examples/                     # Example scripts
-├── docs/                         # Documentation
-├── .github/                      # GitHub workflows and templates
-├── pyproject.toml                # Project configuration
-├── README.md                     # This file
-├── LICENSE                       # MIT License
-├── CONTRIBUTING.md               # Contribution guidelines
-├── CODE_OF_CONDUCT.md            # Code of conduct
-└── CHANGELOG.md                  # Version history
-```
-
 ## Installation
 
 ### From Source
