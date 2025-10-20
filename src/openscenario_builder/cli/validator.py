@@ -69,9 +69,7 @@ class ScenarioValidator:
             self.plugin_manager = PluginManager()
 
             # Add plugin path
-            plugin_path = (
-                Path(__file__).parent.parent / "core" / "plugins"
-            )
+            plugin_path = Path(__file__).parent.parent / "core" / "plugins"
 
             if plugin_path.exists():
                 self.plugin_manager.add_plugin_path(str(plugin_path))
@@ -94,6 +92,7 @@ class ScenarioValidator:
             self.logger.error(f"Initialization failed: {e}")
             if self.verbose:
                 import traceback
+
                 traceback.print_exc()
             return False
 
@@ -111,9 +110,7 @@ class ScenarioValidator:
             # Check initialization
             if not self.plugin_manager or not self.schema_info:
                 return ValidationResult(
-                    file_path,
-                    False,
-                    ["Validator not properly initialized"]
+                    file_path, False, ["Validator not properly initialized"]
                 )
 
             # Import scenario using plugin manager
@@ -123,7 +120,7 @@ class ScenarioValidator:
                 return ValidationResult(
                     file_path,
                     False,
-                    ["Failed to import scenario - invalid XML or file not found"]
+                    ["Failed to import scenario - invalid XML or file not found"],
                 )
 
             # Validate using plugins
@@ -135,11 +132,10 @@ class ScenarioValidator:
             self.logger.error(f"Validation error for {file_path}: {e}")
             if self.verbose:
                 import traceback
+
                 traceback.print_exc()
             return ValidationResult(
-                file_path,
-                False,
-                [f"Validation exception: {str(e)}"]
+                file_path, False, [f"Validation exception: {str(e)}"]
             )
 
     def validate_files(self, file_paths: List[str]) -> List[ValidationResult]:
@@ -193,7 +189,7 @@ def collect_files(patterns: List[str]) -> List[str]:
         # If it's a directory, find all .xosc files
         if Path(pattern).is_dir():
             pattern = str(Path(pattern) / "**" / "*.xosc")
-        
+
         matched = glob.glob(pattern, recursive=True)
         files.extend(matched)
 
@@ -227,7 +223,9 @@ def print_results(results: List[ValidationResult], verbose: bool = False) -> Non
                 for i, error in enumerate(result.errors, 1):
                     print(f"  {i}. {error}")
             else:
-                print(f"  {len(result.errors)} error(s) found (use --verbose for details)")
+                print(
+                    f"  {len(result.errors)} error(s) found (use --verbose for details)"
+                )
 
     # Print summary
     print("\n" + "=" * 70)
@@ -264,42 +262,35 @@ Exit Codes:
   0 - All files are valid
   1 - One or more files are invalid or validation failed
   2 - Command-line arguments error
-        """
+        """,
     )
 
     parser.add_argument(
         "files",
         nargs="+",
-        help="OpenSCENARIO file(s) to validate (supports wildcards and directories)"
+        help="OpenSCENARIO file(s) to validate (supports wildcards and directories)",
     )
 
     parser.add_argument(
-        "-s", "--schema",
-        help="Path to OpenSCENARIO XSD schema file (default: auto-detect)"
+        "-s",
+        "--schema",
+        help="Path to OpenSCENARIO XSD schema file (default: auto-detect)",
     )
 
     parser.add_argument(
-        "-v", "--verbose",
-        action="store_true",
-        help="Show detailed validation errors"
+        "-v", "--verbose", action="store_true", help="Show detailed validation errors"
     )
 
     parser.add_argument(
-        "-q", "--quiet",
-        action="store_true",
-        help="Minimal output (only summary)"
+        "-q", "--quiet", action="store_true", help="Minimal output (only summary)"
     )
 
     parser.add_argument(
-        "--fail-fast",
-        action="store_true",
-        help="Stop validation on first error"
+        "--fail-fast", action="store_true", help="Stop validation on first error"
     )
 
     parser.add_argument(
-        "--version",
-        action="version",
-        version="openscenario-validate 1.0.0"
+        "--version", action="version", version="openscenario-validate 1.0.0"
     )
 
     args = parser.parse_args()
@@ -312,7 +303,7 @@ Exit Codes:
             print(
                 "Error: Could not find default schema file. "
                 "Please specify using --schema",
-                file=sys.stderr
+                file=sys.stderr,
             )
             sys.exit(2)
 
