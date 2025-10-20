@@ -13,7 +13,6 @@ import glob
 
 from openscenario_builder.core.schema.parser import parse_openscenario_schema
 from openscenario_builder.core.plugins.plugin_manager import PluginManager
-from openscenario_builder.core.plugins.import_plugin import ImportPlugin
 
 
 class ValidationResult:
@@ -40,7 +39,6 @@ class ScenarioValidator:
         self.verbose = verbose
         self.schema_info = None
         self.plugin_manager = None
-        self.importer = ImportPlugin()
 
         # Setup logging
         log_level = logging.DEBUG if verbose else logging.WARNING
@@ -118,8 +116,8 @@ class ScenarioValidator:
                     ["Validator not properly initialized"]
                 )
 
-            # Import scenario
-            scenario = self.importer.import_scenario(file_path)
+            # Import scenario using plugin manager
+            scenario = self.plugin_manager.import_scenario(file_path)
 
             if not scenario:
                 return ValidationResult(
@@ -195,10 +193,8 @@ def collect_files(patterns: List[str]) -> List[str]:
         # If it's a directory, find all .xosc files
         if Path(pattern).is_dir():
             pattern = str(Path(pattern) / "**" / "*.xosc")
-            matched = glob.glob(pattern, recursive=True)
-        else:
-            matched = glob.glob(pattern, recursive=True)
-
+        
+        matched = glob.glob(pattern, recursive=True)
         files.extend(matched)
 
     # Remove duplicates and return absolute paths
