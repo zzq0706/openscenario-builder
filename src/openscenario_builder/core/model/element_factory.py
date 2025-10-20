@@ -22,7 +22,6 @@ from openscenario_builder.core.utils.validators import (
 class ElementFactory:
     """
     Factory for creating schema-validated elements.
-
     This factory reuses existing validators from core.utils.validators to ensure
     consistent validation across the codebase:
     - XoscSchemaStructureValidator: element structure, attributes, children
@@ -43,12 +42,10 @@ class ElementFactory:
         self.strict = strict
         # Track validation errors using element object as key
         self._validation_errors: Dict[IElement, List[str]] = {}
-
         # Initialize validators (reuse existing validation logic)
         self._schema_validator = XoscSchemaStructureValidator()
         self._datatype_validator = XoscDataTypeValidator()
         self._structure_validator = XoscStructureValidator()
-
     def create(
         self,
         tag: str,
@@ -225,7 +222,6 @@ class ElementFactory:
             List of validation errors (empty if valid)
         """
         errors = []
-
         parent_def = self.schema_info.elements.get(parent_tag)
         if not parent_def:
             errors.append(f"Parent element '{parent_tag}' not defined in schema")
@@ -267,7 +263,6 @@ class ElementFactory:
         element_def = self.schema_info.elements.get(tag)
         if not element_def:
             return None
-
         return {
             "name": tag,
             "attributes": self.get_all_attributes(tag),

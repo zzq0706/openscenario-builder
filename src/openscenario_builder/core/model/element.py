@@ -12,7 +12,6 @@ from datetime import datetime
 
 class ElementMetadata(IElementMetadata):
     """Metadata for an element"""
-
     def __init__(
         self,
         created_at: Optional[datetime] = None,
@@ -74,7 +73,6 @@ class Element(IElement):
         self._attrs = attrs or {}
         self._children: List[IElement] = children or []
         self._metadata = metadata or ElementMetadata()
-
     @property
     def tag(self) -> str:
         """Element tag name"""
