@@ -52,14 +52,17 @@ python -m openscenario_builder
 
 ## Examples
 
-Check out the `examples/` directory for more:
-
-- **create_simple_scenario.py**: Create a basic OpenSCENARIO file programmatically
-- **validate_scenario.py**: Validate an existing XOSC file against the schema
+- **create_validated_scenario.py**: Schema-aware element creation with validation
+- **demo_schema_aware.py**: Interactive demonstration of validation benefits
+- **create_simple_scenario.py**: Basic OpenSCENARIO file creation
+- **validate_scenario.py**: Validate existing XOSC files
 
 ```bash
-# Create a simple scenario
-python examples/create_simple_scenario.py
+# Schema-aware creation
+python examples/create_validated_scenario.py
+
+# Validation demonstration
+python examples/demo_schema_aware.py
 
 # Validate a scenario
 python examples/validate_scenario.py scenario.xosc schemas/OpenSCENARIO_v1_3.xsd

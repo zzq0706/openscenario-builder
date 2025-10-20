@@ -32,7 +32,7 @@ This will generate a `simple_scenario.xosc` file with:
 Validate an existing OpenSCENARIO file against the schema:
 
 ```bash
-python examples/validate_scenario.py simple_scenario.xosc src/openscenario_builder/core/schema/OpenSCENARIO_v1_3.xsd
+python examples/validate_scenario.py simple_scenario.xosc schemas/OpenSCENARIO_v1_3.xsd
 ```
 
 This will:
