@@ -6,11 +6,29 @@ Decoupled from core business logic
 import sys
 from typing import Optional, Dict, Any
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QComboBox, QFormLayout, QLineEdit, QPushButton,
-    QTreeWidget, QTreeWidgetItem, QTextEdit, QFileDialog, QMenu,
-    QSplitter, QTabWidget, QMessageBox, QStatusBar, QToolBar,
-    QDockWidget, QListWidget, QListWidgetItem
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QComboBox,
+    QFormLayout,
+    QLineEdit,
+    QPushButton,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QTextEdit,
+    QFileDialog,
+    QMenu,
+    QSplitter,
+    QTabWidget,
+    QMessageBox,
+    QStatusBar,
+    QToolBar,
+    QDockWidget,
+    QListWidget,
+    QListWidgetItem,
 )
 from PySide6.QtGui import QAction, QIcon, QFont
 from PySide6.QtCore import Qt, Signal, QObject, QThread
@@ -69,7 +87,9 @@ class ScenarioController(QObject):
             print(f"Failed to save scenario: {e}")
             return False
 
-    def add_element(self, element_name: str, parent_element: Optional[Element] = None) -> Optional[Element]:
+    def add_element(
+        self, element_name: str, parent_element: Optional[Element] = None
+    ) -> Optional[Element]:
         """Add a new element to the scenario"""
         if not self.root_element:
             return None
@@ -112,11 +132,14 @@ class ScenarioController(QObject):
     def select_element(self, element: Element) -> None:
         """Select an element"""
         print(
-            f"Controller.select_element called with: {element.tag if element else 'None'}")
+            f"Controller.select_element called with: {element.tag if element else 'None'}"
+        )
         self.selected_element = element
         self.element_selected.emit(element)
 
-    def update_element_attributes(self, element: Element, attributes: Dict[str, str]) -> None:
+    def update_element_attributes(
+        self, element: Element, attributes: Dict[str, str]
+    ) -> None:
         """Update element attributes"""
         for name, value in attributes.items():
             if value:
@@ -134,7 +157,8 @@ class ScenarioController(QObject):
         errors = []
 
         plugin_errors = self.plugin_manager.validate_scenario(
-            self.root_element, self.schema_info)
+            self.root_element, self.schema_info
+        )
         errors.extend(plugin_errors)
 
         self.validation_errors.emit(errors)
@@ -167,7 +191,7 @@ class ScenarioController(QObject):
                 "attrs": element_def.attributes,
                 "children": element_def.children,
                 "description": element_def.description,
-                "category": "Schema"
+                "category": "Schema",
             }
 
         # Add plugin definitions
@@ -288,8 +312,7 @@ class MainWindow(QMainWindow):
         #     self.on_element_type_changed)
 
         # Tree widget signals
-        self.tree_widget.element_selected.connect(
-            self.controller.select_element)
+        self.tree_widget.element_selected.connect(self.controller.select_element)
 
     def setup_menu(self):
         """Setup the menu bar"""
@@ -372,7 +395,8 @@ class MainWindow(QMainWindow):
     def on_element_selected(self, element: Element):
         """Handle element selection"""
         print(
-            f"MainWindow.on_element_selected called with: {element.tag if element else 'None'}")
+            f"MainWindow.on_element_selected called with: {element.tag if element else 'None'}"
+        )
         self.form_widget.set_element(element)
 
     def on_validation_errors(self, errors: list):
@@ -415,10 +439,10 @@ class MainWindow(QMainWindow):
             self,
             "",
             "The current working scenario will be lost if not saved. Do you want to save before proceeding?",
-            QMessageBox.StandardButton.Save |
-            QMessageBox.StandardButton.Discard |
-            QMessageBox.StandardButton.Cancel,
             QMessageBox.StandardButton.Save
+            | QMessageBox.StandardButton.Discard
+            | QMessageBox.StandardButton.Cancel,
+            QMessageBox.StandardButton.Save,
         )
 
         if reply == QMessageBox.StandardButton.Save:
@@ -432,15 +456,16 @@ class MainWindow(QMainWindow):
         """Open scenario file"""
         if self.prompt_save():
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Open Scenario", "",
-                "OpenSCENARIO Files (*.xosc);;XML Files (*.xml);;All Files (*)"
+                self,
+                "Open Scenario",
+                "",
+                "OpenSCENARIO Files (*.xosc);;XML Files (*.xml);;All Files (*)",
             )
             if file_path:
                 if self.controller.load_scenario(file_path):
                     self.statusbar.showMessage(f"Opened {file_path}")
                 else:
-                    QMessageBox.critical(
-                        self, "Error", "Failed to open scenario file")
+                    QMessageBox.critical(self, "Error", "Failed to open scenario file")
 
     def on_save_scenario(self) -> bool:
         """Save scenario"""
@@ -450,16 +475,14 @@ class MainWindow(QMainWindow):
     def on_save_scenario_as(self) -> bool:
         """Save scenario as"""
         file_path, _ = QFileDialog.getSaveFileName(
-            self, "Save Scenario", "",
-            "OpenSCENARIO Files (*.xosc);;XML Files (*.xml)"
+            self, "Save Scenario", "", "OpenSCENARIO Files (*.xosc);;XML Files (*.xml)"
         )
         if file_path:
             if self.controller.save_scenario(file_path):
                 self.statusbar.showMessage(f"Saved to {file_path}")
                 return True
             else:
-                QMessageBox.critical(
-                    self, "Error", "Failed to save scenario file")
+                QMessageBox.critical(self, "Error", "Failed to save scenario file")
                 return False
         return False
 
@@ -467,19 +490,19 @@ class MainWindow(QMainWindow):
         """Validate scenario"""
         errors = self.controller.validate_scenario()
         if errors:
-            self.statusbar.showMessage(
-                f"Validation found {len(errors)} errors")
+            self.statusbar.showMessage(f"Validation found {len(errors)} errors")
         else:
             self.statusbar.showMessage("Validation passed")
 
     def on_about(self):
         """Show about dialog"""
         QMessageBox.about(
-            self, "About OpenSCENARIO Builder",
+            self,
+            "About OpenSCENARIO Builder",
             "OpenSCENARIO Builder\n\n"
             "A professional tool for creating and editing OpenSCENARIO files.\n\n"
             "Version: 1.0.0\n"
-            "Built with extensible plugin architecture."
+            "Built with extensible plugin architecture.",
         )
 
     def closeEvent(self, event):

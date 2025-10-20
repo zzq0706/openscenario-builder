@@ -11,14 +11,16 @@ from openscenario_builder.interfaces import IElement, ISchemaInfo
 class XoscDataTypeValidator:
     """Validates data type constraints and domain-specific rules"""
 
-    def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
+    def validate(
+        self, element: IElement, schema_info: Optional[ISchemaInfo] = None
+    ) -> List[str]:
         """
         Validate data type constraints
-        
+
         Args:
             element: Root element to validate
             schema_info: Optional schema information (not used by this validator)
-            
+
         Returns:
             List of validation error messages
         """
@@ -29,10 +31,10 @@ class XoscDataTypeValidator:
     def _validate_special_data_types(self, element: IElement) -> List[str]:
         """
         Validate data type specific constraints
-        
+
         Args:
             element: Root element to validate
-            
+
         Returns:
             List of validation errors
         """
@@ -45,37 +47,27 @@ class XoscDataTypeValidator:
                     self._validate_non_negative(
                         elem.attrs["transitionTime"],
                         "transitionTime",
-                        "LightStateAction"
+                        "LightStateAction",
                     )
                 )
 
             # Validate phase durations (must be positive)
             if elem.tag == "Phase" and "duration" in elem.attrs:
                 errors.extend(
-                    self._validate_positive(
-                        elem.attrs["duration"],
-                        "duration",
-                        "Phase"
-                    )
+                    self._validate_positive(elem.attrs["duration"], "duration", "Phase")
                 )
 
             # Validate speed values (should be non-negative)
             if "speed" in elem.attrs:
                 errors.extend(
-                    self._validate_non_negative(
-                        elem.attrs["speed"],
-                        "speed",
-                        elem.tag
-                    )
+                    self._validate_non_negative(elem.attrs["speed"], "speed", elem.tag)
                 )
 
             # Validate probability values (must be between 0 and 1)
             if "probability" in elem.attrs:
                 errors.extend(
                     self._validate_probability(
-                        elem.attrs["probability"],
-                        "probability",
-                        elem.tag
+                        elem.attrs["probability"], "probability", elem.tag
                     )
                 )
 
@@ -83,9 +75,7 @@ class XoscDataTypeValidator:
             if "acceleration" in elem.attrs:
                 errors.extend(
                     self._validate_numeric(
-                        elem.attrs["acceleration"],
-                        "acceleration",
-                        elem.tag
+                        elem.attrs["acceleration"], "acceleration", elem.tag
                     )
                 )
 
@@ -93,20 +83,14 @@ class XoscDataTypeValidator:
             if "distance" in elem.attrs:
                 errors.extend(
                     self._validate_non_negative(
-                        elem.attrs["distance"],
-                        "distance",
-                        elem.tag
+                        elem.attrs["distance"], "distance", elem.tag
                     )
                 )
 
             # Validate time values (should be non-negative)
             if "time" in elem.attrs and elem.tag != "AbsoluteTime":
                 errors.extend(
-                    self._validate_non_negative(
-                        elem.attrs["time"],
-                        "time",
-                        elem.tag
-                    )
+                    self._validate_non_negative(elem.attrs["time"], "time", elem.tag)
                 )
 
             # Recursively validate children
@@ -117,24 +101,21 @@ class XoscDataTypeValidator:
         return errors
 
     def _validate_non_negative(
-        self,
-        value: str,
-        attr_name: str,
-        element_tag: str
+        self, value: str, attr_name: str, element_tag: str
     ) -> List[str]:
         """
         Validate that a numeric value is non-negative
-        
+
         Args:
             value: Value to validate
             attr_name: Attribute name
             element_tag: Element tag name
-            
+
         Returns:
             List of validation errors (empty if valid)
         """
         # Skip parameter references
-        if value.startswith('$'):
+        if value.startswith("$"):
             return []
 
         try:
@@ -151,24 +132,21 @@ class XoscDataTypeValidator:
         return []
 
     def _validate_positive(
-        self,
-        value: str,
-        attr_name: str,
-        element_tag: str
+        self, value: str, attr_name: str, element_tag: str
     ) -> List[str]:
         """
         Validate that a numeric value is positive (> 0)
-        
+
         Args:
             value: Value to validate
             attr_name: Attribute name
             element_tag: Element tag name
-            
+
         Returns:
             List of validation errors (empty if valid)
         """
         # Skip parameter references
-        if value.startswith('$'):
+        if value.startswith("$"):
             return []
 
         try:
@@ -185,24 +163,21 @@ class XoscDataTypeValidator:
         return []
 
     def _validate_probability(
-        self,
-        value: str,
-        attr_name: str,
-        element_tag: str
+        self, value: str, attr_name: str, element_tag: str
     ) -> List[str]:
         """
         Validate that a probability value is between 0 and 1
-        
+
         Args:
             value: Value to validate
             attr_name: Attribute name
             element_tag: Element tag name
-            
+
         Returns:
             List of validation errors (empty if valid)
         """
         # Skip parameter references
-        if value.startswith('$'):
+        if value.startswith("$"):
             return []
 
         try:
@@ -219,24 +194,21 @@ class XoscDataTypeValidator:
         return []
 
     def _validate_numeric(
-        self,
-        value: str,
-        attr_name: str,
-        element_tag: str
+        self, value: str, attr_name: str, element_tag: str
     ) -> List[str]:
         """
         Validate that a value is a valid numeric value (can be negative)
-        
+
         Args:
             value: Value to validate
             attr_name: Attribute name
             element_tag: Element tag name
-            
+
         Returns:
             List of validation errors (empty if valid)
         """
         # Skip parameter references
-        if value.startswith('$'):
+        if value.startswith("$"):
             return []
 
         try:

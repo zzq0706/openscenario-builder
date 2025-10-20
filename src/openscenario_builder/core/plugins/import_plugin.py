@@ -41,7 +41,7 @@ class ImportPlugin(IImportPlugin):
             description="Imports scenarios from OpenSCENARIO XML format",
             author="OpenSCENARIO Builder",
             license="MIT",
-            tags=["import", "xml", "openscenario"]
+            tags=["import", "xml", "openscenario"],
         )
 
     def import_scenario(self, file_path: str) -> Optional[IElement]:

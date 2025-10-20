@@ -22,5 +22,5 @@ __all__ = [
     "Element",
     "SchemaInfo",
     # Plugin system
-    "PluginManager"
+    "PluginManager",
 ]

@@ -8,7 +8,7 @@ from datetime import datetime
 from openscenario_builder.core.utils.validation_helpers import (
     ValidationUtils,
     ElementCollector,
-    RecursiveValidator
+    RecursiveValidator,
 )
 from openscenario_builder.core.model.element import Element
 from openscenario_builder.core.schema.parser import SchemaInfo, GroupDefinition
@@ -17,6 +17,7 @@ from openscenario_builder.interfaces import IGroupDefinition
 
 class MockGroupDefinition(GroupDefinition):
     """Mock group definition for testing"""
+
     def __init__(self, children):
         super().__init__(name="MockGroup", children=children)
 
@@ -74,7 +75,9 @@ class TestValidationUtils:
         assert ValidationUtils.validate_attribute_type("100", "unsignedShort") is True
         assert ValidationUtils.validate_attribute_type("0", "unsignedShort") is True
         assert ValidationUtils.validate_attribute_type("65535", "unsignedShort") is True
-        assert ValidationUtils.validate_attribute_type("65536", "unsignedShort") is False
+        assert (
+            ValidationUtils.validate_attribute_type("65536", "unsignedShort") is False
+        )
         assert ValidationUtils.validate_attribute_type("-1", "unsignedShort") is False
 
     def test_validate_attribute_type_double(self):
@@ -95,16 +98,26 @@ class TestValidationUtils:
 
     def test_validate_attribute_type_datetime(self):
         """Should validate dateTime type"""
-        assert ValidationUtils.validate_attribute_type("2023-12-01T10:30:00Z", "dateTime") is True
-        assert ValidationUtils.validate_attribute_type("2023-12-01T10:30:00", "dateTime") is True
-        assert ValidationUtils.validate_attribute_type("invalid-date", "dateTime") is False
+        assert (
+            ValidationUtils.validate_attribute_type("2023-12-01T10:30:00Z", "dateTime")
+            is True
+        )
+        assert (
+            ValidationUtils.validate_attribute_type("2023-12-01T10:30:00", "dateTime")
+            is True
+        )
+        assert (
+            ValidationUtils.validate_attribute_type("invalid-date", "dateTime") is False
+        )
 
     def test_validate_attribute_type_with_parameters(self):
         """Should accept valid parameter references for any type"""
         assert ValidationUtils.validate_attribute_type("$Speed", "int") is True
         assert ValidationUtils.validate_attribute_type("$Value", "double") is True
         assert ValidationUtils.validate_attribute_type("$Flag", "boolean") is True
-        assert ValidationUtils.validate_attribute_type("$123", "int") is False  # Invalid pattern
+        assert (
+            ValidationUtils.validate_attribute_type("$123", "int") is False
+        )  # Invalid pattern
 
     def test_get_type_validation_hint(self):
         """Should return appropriate hints for types"""
@@ -122,12 +135,12 @@ class TestValidationUtils:
             groups=groups,
             root_elements=[],
             element_hierarchy={},
-            simple_type_definitions={}
+            simple_type_definitions={},
         )
         children = ["Element1", "Element2"]
-        
+
         result = ValidationUtils.expand_children_with_groups(children, schema_info)
-        
+
         assert result == children
 
     def test_expand_children_with_groups_simple_group(self):
@@ -138,12 +151,12 @@ class TestValidationUtils:
             groups=groups,
             root_elements=[],
             element_hierarchy={},
-            simple_type_definitions={}
+            simple_type_definitions={},
         )
         children = ["GROUP:TestGroup", "Element3"]
-        
+
         result = ValidationUtils.expand_children_with_groups(children, schema_info)
-        
+
         assert "Element1" in result
         assert "Element2" in result
         assert "Element3" in result
@@ -153,19 +166,19 @@ class TestValidationUtils:
         """Should expand nested group references"""
         groups = {
             "InnerGroup": MockGroupDefinition(["Element1", "Element2"]),
-            "OuterGroup": MockGroupDefinition(["GROUP:InnerGroup", "Element3"])
+            "OuterGroup": MockGroupDefinition(["GROUP:InnerGroup", "Element3"]),
         }
         schema_info = SchemaInfo(
             elements={},
             groups=groups,
             root_elements=[],
             element_hierarchy={},
-            simple_type_definitions={}
+            simple_type_definitions={},
         )
         children = ["GROUP:OuterGroup"]
-        
+
         result = ValidationUtils.expand_children_with_groups(children, schema_info)
-        
+
         assert "Element1" in result
         assert "Element2" in result
         assert "Element3" in result
@@ -181,9 +194,9 @@ class TestElementCollector:
         child2 = Element("Other", {"name": "other1"})
         root.add_child(child1)
         root.add_child(child2)
-        
+
         result = ElementCollector.collect_by_tags(root, ["Target"])
-        
+
         assert len(result) == 1
         assert "entity1" in result
         assert result["entity1"] == child1
@@ -195,9 +208,9 @@ class TestElementCollector:
         grandchild = Element("Target", {"name": "nested"})
         root.add_child(child)
         child.add_child(grandchild)
-        
+
         result = ElementCollector.collect_by_tags(root, ["Target"])
-        
+
         assert len(result) == 1
         assert "nested" in result
 
@@ -210,9 +223,9 @@ class TestElementCollector:
         root.add_child(child1)
         root.add_child(child2)
         root.add_child(child3)
-        
+
         result = ElementCollector.collect_by_tags(root, ["Tag1", "Tag2"])
-        
+
         assert len(result) == 2
         assert "elem1" in result
         assert "elem2" in result
@@ -225,9 +238,9 @@ class TestElementCollector:
         entity2 = Element("Vehicle", {"name": "Car1"})
         root.add_child(entity1)
         root.add_child(entity2)
-        
+
         result = ElementCollector.collect_entities(root)
-        
+
         assert "Ego" in result
         assert "Car1" in result
 
@@ -238,9 +251,9 @@ class TestElementCollector:
         var2 = Element("VariableDeclaration", {"name": "Distance"})
         root.add_child(var1)
         root.add_child(var2)
-        
+
         result = ElementCollector.collect_variables(root)
-        
+
         assert "Speed" in result
         assert "Distance" in result
 
@@ -251,9 +264,9 @@ class TestElementCollector:
         param2 = Element("ParameterDeclaration", {"name": "MaxAccel"})
         root.add_child(param1)
         root.add_child(param2)
-        
+
         result = ElementCollector.collect_parameters(root)
-        
+
         assert "InitSpeed" in result
         assert "MaxAccel" in result
 
@@ -264,9 +277,9 @@ class TestElementCollector:
         event = Element("Event", {"name": "Event1"})
         root.add_child(act)
         root.add_child(event)
-        
+
         result = ElementCollector.collect_storyboard_elements(root)
-        
+
         assert "Act1" in result
         assert "Event1" in result
 
@@ -277,9 +290,9 @@ class TestElementCollector:
         signal = Element("TrafficSignal", {"id": "Signal1"})
         root.add_child(controller)
         root.add_child(signal)
-        
+
         controllers, signals = ElementCollector.collect_traffic_elements(root)
-        
+
         assert "Controller1" in controllers
         assert "Signal1" in signals
 
@@ -290,9 +303,9 @@ class TestElementCollector:
         child2 = Element("ScenarioObject", {"name": "WithName"})
         root.add_child(child1)
         root.add_child(child2)
-        
+
         result = ElementCollector.collect_entities(root)
-        
+
         assert len(result) == 1
         assert "WithName" in result
 
@@ -304,12 +317,12 @@ class TestRecursiveValidator:
         """Should validate single element"""
         root = Element("Root")
         errors = []
-        
+
         def validation_func(elem):
             return [f"Error in {elem.tag}"]
-        
+
         result = RecursiveValidator.traverse_and_validate(root, validation_func)
-        
+
         assert len(result) == 1
         assert "Root" in result[0]
 
@@ -320,12 +333,12 @@ class TestRecursiveValidator:
         child2 = Element("Child2")
         root.add_child(child1)
         root.add_child(child2)
-        
+
         def validation_func(elem):
             return [f"Error in {elem.tag}"]
-        
+
         result = RecursiveValidator.traverse_and_validate(root, validation_func)
-        
+
         assert len(result) == 3
         assert any("Root" in err for err in result)
         assert any("Child1" in err for err in result)
@@ -334,12 +347,14 @@ class TestRecursiveValidator:
     def test_traverse_and_validate_with_args(self):
         """Should pass additional arguments to validation function"""
         root = Element("Root")
-        
+
         def validation_func(elem, prefix):
             return [f"{prefix}: {elem.tag}"]
-        
-        result = RecursiveValidator.traverse_and_validate(root, validation_func, "ERROR")
-        
+
+        result = RecursiveValidator.traverse_and_validate(
+            root, validation_func, "ERROR"
+        )
+
         assert len(result) == 1
         assert "ERROR: Root" in result[0]
 
@@ -348,14 +363,14 @@ class TestRecursiveValidator:
         root = Element("Root")
         child = Element("Child")
         root.add_child(child)
-        
+
         def validation_func(elem):
             return []
-        
+
         result = RecursiveValidator.traverse_and_validate(root, validation_func)
-        
+
         assert len(result) == 0
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

@@ -36,7 +36,13 @@ def validate_scenario(file_path: str, schema_path: str):
     plugin_manager = PluginManager()
 
     # Add plugin path
-    plugin_path = Path(__file__).parent.parent / "src" / "openscenario_builder" / "core" / "plugins"
+    plugin_path = (
+        Path(__file__).parent.parent
+        / "src"
+        / "openscenario_builder"
+        / "core"
+        / "plugins"
+    )
     plugin_manager.add_plugin_path(str(plugin_path))
 
     # Load plugins
@@ -61,7 +67,9 @@ if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: python validate_scenario.py <scenario.xosc> <schema.xsd>")
         print("\nExample:")
-        print("  python validate_scenario.py simple_scenario.xosc schemas/OpenSCENARIO_v1_3.xsd")
+        print(
+            "  python validate_scenario.py simple_scenario.xosc schemas/OpenSCENARIO_v1_3.xsd"
+        )
         sys.exit(1)
 
     scenario_file = sys.argv[1]

@@ -11,14 +11,16 @@ from openscenario_builder.interfaces import IElement, ISchemaInfo
 class XoscStructureValidator:
     """Validates basic OpenSCENARIO document structure requirements"""
 
-    def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
+    def validate(
+        self, element: IElement, schema_info: Optional[ISchemaInfo] = None
+    ) -> List[str]:
         """
         Validate document structure
-        
+
         Args:
             element: Root element to validate
             schema_info: Optional schema information (not used by this validator)
-            
+
         Returns:
             List of validation error messages
         """
@@ -29,10 +31,10 @@ class XoscStructureValidator:
     def _validate_basic_structure(self, element: IElement) -> List[str]:
         """
         Validate basic OpenSCENARIO structure requirements
-        
+
         Args:
             element: Root element to validate
-            
+
         Returns:
             List of validation errors
         """
@@ -47,10 +49,10 @@ class XoscStructureValidator:
     def _validate_root_element(self, element: IElement) -> List[str]:
         """
         Validate the root OpenSCENARIO element structure
-        
+
         Args:
             element: Root OpenSCENARIO element
-            
+
         Returns:
             List of validation errors
         """
@@ -94,10 +96,10 @@ class XoscStructureValidator:
     def _validate_file_header(self, fileheader: IElement) -> List[str]:
         """
         Validate FileHeader element
-        
+
         Args:
             fileheader: FileHeader element
-            
+
         Returns:
             List of validation errors
         """

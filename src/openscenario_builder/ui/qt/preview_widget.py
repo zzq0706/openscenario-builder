@@ -35,7 +35,7 @@ class XMLHighlighter(QSyntaxHighlighter):
         import re
 
         # Highlight tags
-        tag_pattern = r'<[^>]+>'
+        tag_pattern = r"<[^>]+>"
         for match in re.finditer(tag_pattern, text):
             start = match.start()
             end = match.end()
@@ -50,8 +50,7 @@ class XMLHighlighter(QSyntaxHighlighter):
             value_end = match.end(2)
 
             self.setFormat(attr_start, attr_end - attr_start, self.attr_format)
-            self.setFormat(value_start, value_end -
-                           value_start, self.value_format)
+            self.setFormat(value_start, value_end - value_start, self.value_format)
 
 
 class XMLPreviewWidget(QWidget):
@@ -93,8 +92,7 @@ class XMLPreviewWidget(QWidget):
     def refresh(self):
         """Refresh the XML preview"""
         if self.controller.root_element:
-            xml_content = self.controller.root_element.to_xml_string(
-                pretty=True)
+            xml_content = self.controller.root_element.to_xml_string(pretty=True)
             self.text_edit.setPlainText(xml_content)
         else:
             self.text_edit.setPlainText("No scenario loaded.")

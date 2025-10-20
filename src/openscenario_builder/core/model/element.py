@@ -12,7 +12,7 @@ from datetime import datetime
 
 class ElementMetadata(IElementMetadata):
     """Metadata for an element"""
-    
+
     def __init__(
         self,
         created_at: Optional[datetime] = None,
@@ -20,7 +20,7 @@ class ElementMetadata(IElementMetadata):
         created_by: str = "",
         description: str = "",
         tags: Optional[List[str]] = None,
-        validation_errors: Optional[List[str]] = None
+        validation_errors: Optional[List[str]] = None,
     ):
         self._created_at = created_at or datetime.now()
         self._modified_at = modified_at or datetime.now()
@@ -28,31 +28,31 @@ class ElementMetadata(IElementMetadata):
         self._description = description
         self._tags = tags or []
         self._validation_errors = validation_errors or []
-    
+
     @property
     def created_at(self) -> datetime:
         return self._created_at
-    
+
     @property
     def modified_at(self) -> datetime:
         return self._modified_at
-    
+
     @modified_at.setter
     def modified_at(self, value: datetime) -> None:
         self._modified_at = value
-    
+
     @property
     def created_by(self) -> str:
         return self._created_by
-    
+
     @property
     def description(self) -> str:
         return self._description
-    
+
     @property
     def tags(self) -> List[str]:
         return self._tags
-    
+
     @property
     def validation_errors(self) -> List[str]:
         return self._validation_errors
@@ -63,29 +63,33 @@ class Element(IElement):
     Enhanced Element class with validation, metadata, and XML handling
     """
 
-    def __init__(self, tag: str, attrs: Optional[Dict[str, str]] = None,
-                 children: Optional[List[IElement]] = None,
-                 metadata: Optional[ElementMetadata] = None):
+    def __init__(
+        self,
+        tag: str,
+        attrs: Optional[Dict[str, str]] = None,
+        children: Optional[List[IElement]] = None,
+        metadata: Optional[ElementMetadata] = None,
+    ):
         self._tag = tag
         self._attrs = attrs or {}
         self._children: List[IElement] = children or []
         self._metadata = metadata or ElementMetadata()
-    
+
     @property
     def tag(self) -> str:
         """Element tag name"""
         return self._tag
-    
+
     @property
     def attrs(self) -> Dict[str, str]:
         """Element attributes"""
         return self._attrs
-    
+
     @property
     def children(self) -> List[IElement]:
         """Child elements"""
         return self._children
-    
+
     @property
     def metadata(self) -> IElementMetadata:
         """Element metadata"""
@@ -150,7 +154,7 @@ class Element(IElement):
             elem.append(child.to_etree_element())
         return elem
 
-    def to_xml_string(self, pretty: bool = True, encoding: str = 'unicode') -> str:
+    def to_xml_string(self, pretty: bool = True, encoding: str = "unicode") -> str:
         """Convert to XML string"""
         try:
             # Convert to ElementTree first
@@ -182,10 +186,11 @@ class Element(IElement):
     def _clean_namespace_prefixes(self, xml_string: str) -> str:
         """Remove unwanted namespace prefixes from XML string"""
         import re
+
         # Remove namespace prefixes like ns0:, ns1:, etc.
-        xml_string = re.sub(r'\bns\d+:', '', xml_string)
+        xml_string = re.sub(r"\bns\d+:", "", xml_string)
         # Remove namespace declarations that are no longer needed
-        xml_string = re.sub(r'\s+xmlns:ns\d+="[^"]*"', '', xml_string)
+        xml_string = re.sub(r'\s+xmlns:ns\d+="[^"]*"', "", xml_string)
         return xml_string
 
     def to_dict(self) -> Dict[str, Any]:
@@ -199,25 +204,23 @@ class Element(IElement):
                 "modified_at": self._metadata.modified_at.isoformat(),
                 "created_by": self._metadata.created_by,
                 "description": self._metadata.description,
-                "tags": self._metadata.tags
-            }
+                "tags": self._metadata.tags,
+            },
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Element':
+    def from_dict(cls, data: Dict[str, Any]) -> "Element":
         """Create Element from dictionary representation"""
         element = cls(
             tag=data["tag"],
             attrs=data.get("attrs", {}),
             metadata=ElementMetadata(
-                created_at=datetime.fromisoformat(
-                    data["metadata"]["created_at"]),
-                modified_at=datetime.fromisoformat(
-                    data["metadata"]["modified_at"]),
+                created_at=datetime.fromisoformat(data["metadata"]["created_at"]),
+                modified_at=datetime.fromisoformat(data["metadata"]["modified_at"]),
                 created_by=data["metadata"]["created_by"],
                 description=data["metadata"]["description"],
-                tags=data["metadata"]["tags"]
-            )
+                tags=data["metadata"]["tags"],
+            ),
         )
 
         # Add children recursively
@@ -228,12 +231,9 @@ class Element(IElement):
         return element
 
     @classmethod
-    def from_etree_element(cls, etree_elem: XMLElement) -> 'Element':
+    def from_etree_element(cls, etree_elem: XMLElement) -> "Element":
         """Create Element from XML ElementTree element"""
-        element = cls(
-            tag=etree_elem.tag,
-            attrs=dict(etree_elem.attrib)
-        )
+        element = cls(tag=etree_elem.tag, attrs=dict(etree_elem.attrib))
 
         # Add children recursively
         for child_elem in etree_elem:
@@ -242,7 +242,7 @@ class Element(IElement):
 
         return element
 
-    def clone(self) -> 'Element':
+    def clone(self) -> "Element":
         """Create a deep copy of this element"""
         return self.from_dict(self.to_dict())
 

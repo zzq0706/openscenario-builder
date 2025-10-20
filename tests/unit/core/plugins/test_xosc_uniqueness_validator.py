@@ -21,9 +21,9 @@ class TestXoscUniquenessValidator:
         root.add_child(child1)
         root.add_child(child2)
         root.add_child(child3)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_duplicate_names_same_level(self):
@@ -34,9 +34,9 @@ class TestXoscUniquenessValidator:
         child2 = Element("Child", {"name": "duplicate"})
         root.add_child(child1)
         root.add_child(child2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "UNIQUENESS_ERROR" in errors[0]
         assert "duplicate" in errors[0]
@@ -52,9 +52,9 @@ class TestXoscUniquenessValidator:
         root.add_child(child1)
         root.add_child(child2)
         child2.add_child(grandchild)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_multiple_duplicates_same_level(self):
@@ -69,9 +69,9 @@ class TestXoscUniquenessValidator:
         root.add_child(child2)
         root.add_child(child3)
         root.add_child(child4)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 2
         assert all("UNIQUENESS_ERROR" in error for error in errors)
 
@@ -85,9 +85,9 @@ class TestXoscUniquenessValidator:
         root.add_child(child1)
         root.add_child(child2)
         root.add_child(child3)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "3 elements" in errors[0]
 
@@ -99,9 +99,9 @@ class TestXoscUniquenessValidator:
         child2 = Element("Child")  # No name
         root.add_child(child1)
         root.add_child(child2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_mixed_named_and_unnamed(self):
@@ -114,9 +114,9 @@ class TestXoscUniquenessValidator:
         root.add_child(child1)
         root.add_child(child2)
         root.add_child(child3)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "named" in errors[0]
 
@@ -126,18 +126,18 @@ class TestXoscUniquenessValidator:
         root = Element("Root")
         parent1 = Element("Parent", {"name": "p1"})
         parent2 = Element("Parent", {"name": "p2"})
-        
+
         # Same name in different parent scopes - should be allowed
         child1 = Element("Child", {"name": "child"})
         child2 = Element("Child", {"name": "child"})
-        
+
         root.add_child(parent1)
         root.add_child(parent2)
         parent1.add_child(child1)
         parent2.add_child(child2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_deeply_nested_duplicates(self):
@@ -148,14 +148,14 @@ class TestXoscUniquenessValidator:
         level2 = Element("Level2")
         child1 = Element("Child", {"name": "dup"})
         child2 = Element("Child", {"name": "dup"})
-        
+
         root.add_child(level1)
         level1.add_child(level2)
         level2.add_child(child1)
         level2.add_child(child2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "UNIQUENESS_ERROR" in errors[0]
 
@@ -167,9 +167,9 @@ class TestXoscUniquenessValidator:
         child2 = Element("TypeB", {"name": "samename"})
         root.add_child(child1)
         root.add_child(child2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "TypeA" in errors[0] and "TypeB" in errors[0]
 
@@ -177,9 +177,9 @@ class TestXoscUniquenessValidator:
         """Should not error on empty element tree"""
         validator = XoscUniquenessValidator()
         root = Element("Root")
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_single_element(self):
@@ -188,11 +188,11 @@ class TestXoscUniquenessValidator:
         root = Element("Root")
         child = Element("Child", {"name": "single"})
         root.add_child(child)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

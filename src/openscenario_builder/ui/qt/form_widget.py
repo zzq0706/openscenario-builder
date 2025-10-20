@@ -5,8 +5,15 @@ Provides form interface for editing element properties
 
 from typing import Optional, Dict
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QFormLayout, QLineEdit, QLabel,
-    QPushButton, QScrollArea, QFrame, QHBoxLayout
+    QWidget,
+    QVBoxLayout,
+    QFormLayout,
+    QLineEdit,
+    QLabel,
+    QPushButton,
+    QScrollArea,
+    QFrame,
+    QHBoxLayout,
 )
 from PySide6.QtCore import Qt
 
@@ -31,8 +38,7 @@ class ElementFormWidget(QWidget):
         # Scroll area for form
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
-        scroll_area.setHorizontalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         # Form container
         self.form_container = QWidget()
@@ -52,14 +58,16 @@ class ElementFormWidget(QWidget):
     def set_element(self, element: Element):
         """Set the element to edit"""
         print(
-            f"FormWidget.set_element called with element: {element.tag if element else 'None'}")
+            f"FormWidget.set_element called with element: {element.tag if element else 'None'}"
+        )
         self.current_element = element
         self.build_form()
 
     def build_form(self):
         """Build the form for the current element"""
         print(
-            f"FormWidget.build_form called for element: {self.current_element.tag if self.current_element else 'None'}")
+            f"FormWidget.build_form called for element: {self.current_element.tag if self.current_element else 'None'}"
+        )
         # Clear existing form
         self.clear_form()
 
@@ -130,5 +138,4 @@ class ElementFormWidget(QWidget):
                 attributes[attr_name] = value
 
         # Update element
-        self.controller.update_element_attributes(
-            self.current_element, attributes)
+        self.controller.update_element_attributes(self.current_element, attributes)

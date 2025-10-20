@@ -12,20 +12,17 @@ class RecursiveValidator:
 
     @staticmethod
     def traverse_and_validate(
-        root: IElement,
-        validation_func,
-        *args,
-        **kwargs
+        root: IElement, validation_func, *args, **kwargs
     ) -> List[str]:
         """
         Traverse element tree and apply validation function to each element
-        
+
         Args:
             root: Root element to start traversal from
             validation_func: Function to call on each element (receives elem as first arg)
             *args: Additional positional arguments to pass to validation_func
             **kwargs: Additional keyword arguments to pass to validation_func
-            
+
         Returns:
             List of validation errors
         """

@@ -6,25 +6,31 @@ Parses XSD files and maintains element hierarchy and relationships
 import xml.etree.ElementTree as ET
 from typing import Dict, List, Optional, Set, Tuple, Mapping
 from pathlib import Path
-from openscenario_builder.interfaces import IElementDefinition, IGroupDefinition, ISchemaInfo, IAttributeDefinition, IChildElementInfo
+from openscenario_builder.interfaces import (
+    IElementDefinition,
+    IGroupDefinition,
+    ISchemaInfo,
+    IAttributeDefinition,
+    IChildElementInfo,
+)
 
 
 class AttributeDefinition(IAttributeDefinition):
     """Concrete implementation of attribute definition"""
-    
+
     def __init__(self, name: str, type: str, required: bool):
         self._name = name
         self._type = type
         self._required = required
-    
+
     @property
     def name(self) -> str:
         return self._name
-    
+
     @property
     def type(self) -> str:
         return self._type
-    
+
     @property
     def required(self) -> bool:
         return self._required
@@ -32,20 +38,20 @@ class AttributeDefinition(IAttributeDefinition):
 
 class ChildElementInfo(IChildElementInfo):
     """Information about a child element including occurrence constraints"""
-    
+
     def __init__(self, name: str, min_occur: int = 1, max_occur: str = "1"):
         self._name = name
         self._min_occur = min_occur
         self._max_occur = max_occur
-    
+
     @property
     def name(self) -> str:
         return self._name
-    
+
     @property
     def min_occur(self) -> int:
         return self._min_occur
-    
+
     @property
     def max_occur(self) -> str:
         return self._max_occur
@@ -53,7 +59,7 @@ class ChildElementInfo(IChildElementInfo):
 
 class ElementDefinition(IElementDefinition):
     """Complete definition of an XML element"""
-    
+
     def __init__(
         self,
         name: str,
@@ -64,7 +70,7 @@ class ElementDefinition(IElementDefinition):
         is_abstract: bool = False,
         is_root: bool = False,
         child_occurrence_info: Optional[Dict[str, IChildElementInfo]] = None,
-        content_model_type: str = "sequence"
+        content_model_type: str = "sequence",
     ):
         self._name = name
         self._attributes = attributes
@@ -75,43 +81,43 @@ class ElementDefinition(IElementDefinition):
         self._is_root = is_root
         self._child_occurrence_info = child_occurrence_info or {}
         self._content_model_type = content_model_type
-    
+
     @property
     def name(self) -> str:
         return self._name
-    
+
     @property
     def attributes(self) -> List[IAttributeDefinition]:
         return self._attributes
-    
+
     @property
     def children(self) -> List[str]:
         return self._children
-    
+
     @property
     def is_abstract(self) -> bool:
         return self._is_abstract
-    
+
     @is_abstract.setter
     def is_abstract(self, value: bool) -> None:
         self._is_abstract = value
-    
+
     @property
     def is_root(self) -> bool:
         return self._is_root
-    
+
     @is_root.setter
     def is_root(self, value: bool) -> None:
         self._is_root = value
-    
+
     @property
     def description(self) -> str:
         return self._description
-    
+
     @property
     def child_occurrence_info(self) -> Dict[str, IChildElementInfo]:
         return self._child_occurrence_info
-    
+
     @property
     def content_model_type(self) -> str:
         return self._content_model_type
@@ -119,7 +125,7 @@ class ElementDefinition(IElementDefinition):
 
 class GroupDefinition(IGroupDefinition):
     """Definition of an XSD group"""
-    
+
     def __init__(
         self,
         name: str,
@@ -127,7 +133,7 @@ class GroupDefinition(IGroupDefinition):
         is_choice: bool = False,
         is_sequence: bool = False,
         is_all: bool = False,
-        child_occurrence_info: Optional[Dict[str, IChildElementInfo]] = None
+        child_occurrence_info: Optional[Dict[str, IChildElementInfo]] = None,
     ):
         self._name = name
         self._children = children
@@ -135,27 +141,27 @@ class GroupDefinition(IGroupDefinition):
         self._is_sequence = is_sequence
         self._is_all = is_all
         self._child_occurrence_info = child_occurrence_info or {}
-    
+
     @property
     def name(self) -> str:
         return self._name
-    
+
     @property
     def children(self) -> List[str]:
         return self._children
-    
+
     @property
     def is_choice(self) -> bool:
         return self._is_choice
-    
+
     @property
     def is_sequence(self) -> bool:
         return self._is_sequence
-    
+
     @property
     def is_all(self) -> bool:
         return self._is_all
-    
+
     @property
     def child_occurrence_info(self) -> Dict[str, IChildElementInfo]:
         return self._child_occurrence_info
@@ -163,37 +169,37 @@ class GroupDefinition(IGroupDefinition):
 
 class SchemaInfo(ISchemaInfo):
     """Complete schema information with hierarchy"""
-    
+
     def __init__(
         self,
-        elements: Dict[str, 'ElementDefinition'],
-        groups: Dict[str, 'GroupDefinition'],
+        elements: Dict[str, "ElementDefinition"],
+        groups: Dict[str, "GroupDefinition"],
         root_elements: List[str],
         element_hierarchy: Dict[str, List[str]],
-        simple_type_definitions: Dict[str, List[str]]
+        simple_type_definitions: Dict[str, List[str]],
     ):
         self._elements = elements
         self._groups = groups
         self._root_elements = root_elements
         self._element_hierarchy = element_hierarchy
         self._simple_type_definitions = simple_type_definitions
-    
+
     @property
     def elements(self) -> Mapping[str, IElementDefinition]:
         return self._elements
-    
+
     @property
     def groups(self) -> Mapping[str, IGroupDefinition]:
         return self._groups
-    
+
     @property
     def root_elements(self) -> List[str]:
         return self._root_elements
-    
+
     @property
     def element_hierarchy(self) -> Dict[str, List[str]]:
         return self._element_hierarchy
-    
+
     @property
     def simple_type_definitions(self) -> Dict[str, List[str]]:
         return self._simple_type_definitions
@@ -217,8 +223,7 @@ class XSDParser:
         complex_types = self._parse_complex_types(root, groups)
 
         # Parse elements and build hierarchy
-        elements, root_elements = self._parse_elements(
-            root, complex_types, groups)
+        elements, root_elements = self._parse_elements(root, complex_types, groups)
         hierarchy = self._build_hierarchy(elements)
 
         return SchemaInfo(
@@ -226,7 +231,7 @@ class XSDParser:
             groups=groups,
             root_elements=root_elements,
             element_hierarchy=hierarchy,
-            simple_type_definitions=simple_type_definitions
+            simple_type_definitions=simple_type_definitions,
         )
 
     def _parse_simple_types(self, root: ET.Element) -> Dict[str, List[str]]:
@@ -237,7 +242,8 @@ class XSDParser:
             type_name = simple_type.attrib.get("name")
             if type_name:
                 simple_type_definitions[type_name] = self._parse_simple_type(
-                    simple_type)
+                    simple_type
+                )
         return simple_type_definitions
 
     def _parse_simple_type(self, simple_type: ET.Element) -> List[str]:
@@ -258,10 +264,10 @@ class XSDParser:
         """Parse all namespaces from the schema"""
         namespaces = {}
         for prefix, uri in root.attrib.items():
-            if prefix.startswith('xmlns:'):
+            if prefix.startswith("xmlns:"):
                 namespaces[prefix[6:]] = uri
-            elif prefix == 'xmlns':
-                namespaces['default'] = uri
+            elif prefix == "xmlns":
+                namespaces["default"] = uri
         return namespaces
 
     def _parse_groups(self, root: ET.Element) -> Dict[str, GroupDefinition]:
@@ -293,7 +299,7 @@ class XSDParser:
                             child_occurrence_info[child_name] = ChildElementInfo(
                                 name=child_name,
                                 min_occur=min_occur,
-                                max_occur=max_occur
+                                max_occur=max_occur,
                             )
                     # Also check for group references in choice
                     for child in content.findall(f"{self.xs_ns}group"):
@@ -303,10 +309,12 @@ class XSDParser:
                             # Capture occurrence constraints for groups
                             min_occur = int(child.attrib.get("minOccurs", "1"))
                             max_occur = child.attrib.get("maxOccurs", "1")
-                            child_occurrence_info[f"GROUP:{ref_name}"] = ChildElementInfo(
-                                name=f"GROUP:{ref_name}",
-                                min_occur=min_occur,
-                                max_occur=max_occur
+                            child_occurrence_info[f"GROUP:{ref_name}"] = (
+                                ChildElementInfo(
+                                    name=f"GROUP:{ref_name}",
+                                    min_occur=min_occur,
+                                    max_occur=max_occur,
+                                )
                             )
                 elif content.tag == f"{self.xs_ns}sequence":
                     is_sequence = True
@@ -320,7 +328,7 @@ class XSDParser:
                             child_occurrence_info[child_name] = ChildElementInfo(
                                 name=child_name,
                                 min_occur=min_occur,
-                                max_occur=max_occur
+                                max_occur=max_occur,
                             )
                     # Also check for group references in sequence
                     for child in content.findall(f"{self.xs_ns}group"):
@@ -330,10 +338,12 @@ class XSDParser:
                             # Capture occurrence constraints for groups
                             min_occur = int(child.attrib.get("minOccurs", "1"))
                             max_occur = child.attrib.get("maxOccurs", "1")
-                            child_occurrence_info[f"GROUP:{ref_name}"] = ChildElementInfo(
-                                name=f"GROUP:{ref_name}",
-                                min_occur=min_occur,
-                                max_occur=max_occur
+                            child_occurrence_info[f"GROUP:{ref_name}"] = (
+                                ChildElementInfo(
+                                    name=f"GROUP:{ref_name}",
+                                    min_occur=min_occur,
+                                    max_occur=max_occur,
+                                )
                             )
                 elif content.tag == f"{self.xs_ns}all":
                     is_all = True
@@ -347,7 +357,7 @@ class XSDParser:
                             child_occurrence_info[child_name] = ChildElementInfo(
                                 name=child_name,
                                 min_occur=min_occur,
-                                max_occur=max_occur
+                                max_occur=max_occur,
                             )
                     # Also check for group references in all
                     for child in content.findall(f"{self.xs_ns}group"):
@@ -357,10 +367,12 @@ class XSDParser:
                             # Capture occurrence constraints for groups
                             min_occur = int(child.attrib.get("minOccurs", "1"))
                             max_occur = child.attrib.get("maxOccurs", "1")
-                            child_occurrence_info[f"GROUP:{ref_name}"] = ChildElementInfo(
-                                name=f"GROUP:{ref_name}",
-                                min_occur=min_occur,
-                                max_occur=max_occur
+                            child_occurrence_info[f"GROUP:{ref_name}"] = (
+                                ChildElementInfo(
+                                    name=f"GROUP:{ref_name}",
+                                    min_occur=min_occur,
+                                    max_occur=max_occur,
+                                )
                             )
 
             groups[group_name] = GroupDefinition(
@@ -369,12 +381,14 @@ class XSDParser:
                 is_choice=is_choice,
                 is_sequence=is_sequence,
                 is_all=is_all,
-                child_occurrence_info=child_occurrence_info
+                child_occurrence_info=child_occurrence_info,
             )
 
         return groups
 
-    def _expand_group_references(self, children: List[str], groups: Dict[str, GroupDefinition]) -> List[str]:
+    def _expand_group_references(
+        self, children: List[str], groups: Dict[str, GroupDefinition]
+    ) -> List[str]:
         """Recursively expand group references to get all available elements"""
         expanded_children = []
 
@@ -389,7 +403,8 @@ class XSDParser:
                     else:
                         # For sequence/all groups, recursively expand the group's children
                         expanded_children.extend(
-                            self._expand_group_references(group.children, groups))
+                            self._expand_group_references(group.children, groups)
+                        )
                 else:
                     # Group not found, keep the reference
                     expanded_children.append(child)
@@ -398,24 +413,27 @@ class XSDParser:
 
         return expanded_children
 
-    def _parse_complex_types(self, root: ET.Element, groups: Dict[str, GroupDefinition]) -> Dict[str, Dict]:
+    def _parse_complex_types(
+        self, root: ET.Element, groups: Dict[str, GroupDefinition]
+    ) -> Dict[str, Dict]:
         """Parse all complex type definitions"""
         complex_types = {}
         for ct in root.findall(f".//{self.xs_ns}complexType"):
             type_name = ct.attrib.get("name")
             if type_name:
-                complex_types[type_name] = self._parse_complex_type_content(
-                    ct, groups)
+                complex_types[type_name] = self._parse_complex_type_content(ct, groups)
         return complex_types
 
-    def _parse_complex_type_content(self, ct_elem: ET.Element, groups: Dict[str, GroupDefinition]) -> Dict:
+    def _parse_complex_type_content(
+        self, ct_elem: ET.Element, groups: Dict[str, GroupDefinition]
+    ) -> Dict:
         """Parse the content of a complex type"""
         result = {
             "attributes": [],
             "children": [],
             "child_occurrence_info": {},
             "content_model_type": "sequence",  # Default
-            "is_abstract": ct_elem.attrib.get("abstract", "false").lower() == "true"
+            "is_abstract": ct_elem.attrib.get("abstract", "false").lower() == "true",
         }
 
         # Parse attributes
@@ -430,9 +448,7 @@ class XSDParser:
             if attr_name:
                 # Create AttributeDefinition object
                 attr_def = AttributeDefinition(
-                    name=attr_name,
-                    type=attr_type,
-                    required=is_required
+                    name=attr_name, type=attr_type, required=is_required
                 )
                 result["attributes"].append(attr_def)
 
@@ -448,9 +464,7 @@ class XSDParser:
                         min_occur = int(child.attrib.get("minOccurs", "1"))
                         max_occur = child.attrib.get("maxOccurs", "1")
                         result["child_occurrence_info"][child_name] = ChildElementInfo(
-                            name=child_name,
-                            min_occur=min_occur,
-                            max_occur=max_occur
+                            name=child_name, min_occur=min_occur, max_occur=max_occur
                         )
                 # Also check for group references
                 for child in content_model.findall(f"{self.xs_ns}group"):
@@ -460,10 +474,12 @@ class XSDParser:
                         # Capture occurrence constraints for groups
                         min_occur = int(child.attrib.get("minOccurs", "1"))
                         max_occur = child.attrib.get("maxOccurs", "1")
-                        result["child_occurrence_info"][f"GROUP:{ref_name}"] = ChildElementInfo(
-                            name=f"GROUP:{ref_name}",
-                            min_occur=min_occur,
-                            max_occur=max_occur
+                        result["child_occurrence_info"][f"GROUP:{ref_name}"] = (
+                            ChildElementInfo(
+                                name=f"GROUP:{ref_name}",
+                                min_occur=min_occur,
+                                max_occur=max_occur,
+                            )
                         )
             elif content_model.tag == f"{self.xs_ns}choice":
                 result["content_model_type"] = "choice"
@@ -475,9 +491,7 @@ class XSDParser:
                         min_occur = int(child.attrib.get("minOccurs", "1"))
                         max_occur = child.attrib.get("maxOccurs", "1")
                         result["child_occurrence_info"][child_name] = ChildElementInfo(
-                            name=child_name,
-                            min_occur=min_occur,
-                            max_occur=max_occur
+                            name=child_name, min_occur=min_occur, max_occur=max_occur
                         )
                 # Also check for group references
                 for child in content_model.findall(f"{self.xs_ns}group"):
@@ -487,10 +501,12 @@ class XSDParser:
                         # Capture occurrence constraints for groups
                         min_occur = int(child.attrib.get("minOccurs", "1"))
                         max_occur = child.attrib.get("maxOccurs", "1")
-                        result["child_occurrence_info"][f"GROUP:{ref_name}"] = ChildElementInfo(
-                            name=f"GROUP:{ref_name}",
-                            min_occur=min_occur,
-                            max_occur=max_occur
+                        result["child_occurrence_info"][f"GROUP:{ref_name}"] = (
+                            ChildElementInfo(
+                                name=f"GROUP:{ref_name}",
+                                min_occur=min_occur,
+                                max_occur=max_occur,
+                            )
                         )
             elif content_model.tag == f"{self.xs_ns}all":
                 result["content_model_type"] = "all"
@@ -502,9 +518,7 @@ class XSDParser:
                         min_occur = int(child.attrib.get("minOccurs", "1"))
                         max_occur = child.attrib.get("maxOccurs", "1")
                         result["child_occurrence_info"][child_name] = ChildElementInfo(
-                            name=child_name,
-                            min_occur=min_occur,
-                            max_occur=max_occur
+                            name=child_name, min_occur=min_occur, max_occur=max_occur
                         )
                 # Also check for group references
                 for child in content_model.findall(f"{self.xs_ns}group"):
@@ -514,15 +528,19 @@ class XSDParser:
                         # Capture occurrence constraints for groups
                         min_occur = int(child.attrib.get("minOccurs", "1"))
                         max_occur = child.attrib.get("maxOccurs", "1")
-                        result["child_occurrence_info"][f"GROUP:{ref_name}"] = ChildElementInfo(
-                            name=f"GROUP:{ref_name}",
-                            min_occur=min_occur,
-                            max_occur=max_occur
+                        result["child_occurrence_info"][f"GROUP:{ref_name}"] = (
+                            ChildElementInfo(
+                                name=f"GROUP:{ref_name}",
+                                min_occur=min_occur,
+                                max_occur=max_occur,
+                            )
                         )
 
         return result
 
-    def _parse_elements(self, root: ET.Element, complex_types: Dict, groups: Dict[str, GroupDefinition]) -> Tuple[Dict[str, ElementDefinition], List[str]]:
+    def _parse_elements(
+        self, root: ET.Element, complex_types: Dict, groups: Dict[str, GroupDefinition]
+    ) -> Tuple[Dict[str, ElementDefinition], List[str]]:
         """Parse all element definitions"""
         elements = {}
         root_elements = []
@@ -549,7 +567,8 @@ class XSDParser:
                     ct_info = complex_types[ref_type]
                     # Expand group references in children
                     expanded_children = self._expand_group_references(
-                        ct_info["children"], groups)
+                        ct_info["children"], groups
+                    )
                     elements[name] = ElementDefinition(
                         name=name,
                         attributes=ct_info["attributes"],
@@ -557,27 +576,32 @@ class XSDParser:
                         is_abstract=ct_info["is_abstract"],
                         is_root=False,  # Will be determined later
                         child_occurrence_info=ct_info.get("child_occurrence_info", {}),
-                        content_model_type=ct_info.get("content_model_type", "sequence")
+                        content_model_type=ct_info.get(
+                            "content_model_type", "sequence"
+                        ),
                     )
                 else:
                     # Handle simple types or other references
                     elements[name] = ElementDefinition(
                         name=name,
                         attributes=[
-                            AttributeDefinition(name="value", type="string", required=False)],
+                            AttributeDefinition(
+                                name="value", type="string", required=False
+                            )
+                        ],
                         children=[],
                         is_abstract=False,
                         is_root=False,
                     )
             else:
                 # Inline complex type
-                ct = elem.find(
-                    f".//{self.xs_ns}complexType")
+                ct = elem.find(f".//{self.xs_ns}complexType")
                 if ct is not None:
                     ct_info = self._parse_complex_type_content(ct, groups)
                     # Expand group references in children
                     expanded_children = self._expand_group_references(
-                        ct_info["children"], groups)
+                        ct_info["children"], groups
+                    )
                     elements[name] = ElementDefinition(
                         name=name,
                         attributes=ct_info["attributes"],
@@ -585,17 +609,22 @@ class XSDParser:
                         is_abstract=ct_info["is_abstract"],
                         is_root=False,
                         child_occurrence_info=ct_info.get("child_occurrence_info", {}),
-                        content_model_type=ct_info.get("content_model_type", "sequence")
+                        content_model_type=ct_info.get(
+                            "content_model_type", "sequence"
+                        ),
                     )
                 else:
                     # Element without complex type (simple element)
                     elements[name] = ElementDefinition(
                         name=name,
                         attributes=[
-                            AttributeDefinition(name="value", type="string", required=False)],
+                            AttributeDefinition(
+                                name="value", type="string", required=False
+                            )
+                        ],
                         children=[],
                         is_abstract=False,
-                        is_root=False
+                        is_root=False,
                     )
 
         # Determine root elements (elements that are not children of other elements)
@@ -610,7 +639,9 @@ class XSDParser:
 
         return elements, root_elements
 
-    def _build_hierarchy(self, elements: Dict[str, ElementDefinition]) -> Dict[str, List[str]]:
+    def _build_hierarchy(
+        self, elements: Dict[str, ElementDefinition]
+    ) -> Dict[str, List[str]]:
         """Build the element hierarchy based on parent-child relationships"""
         hierarchy = {}
 
@@ -655,7 +686,7 @@ if __name__ == "__main__":
     current_dir = Path(__file__).parent
     project_root = current_dir.parent.parent.parent  # Go up to project root
     schema_path = project_root / "schemas" / "OpenSCENARIO_v1_3.xsd"
-    
+
     # Fallback: old location in src/
     if not schema_path.exists():
         schema_path = current_dir / "OpenSCENARIO_v1_3.xsd"

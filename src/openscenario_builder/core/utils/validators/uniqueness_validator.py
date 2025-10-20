@@ -11,14 +11,16 @@ from openscenario_builder.interfaces import IElement, ISchemaInfo
 class XoscUniquenessValidator:
     """Validates that element names are unique within their scope"""
 
-    def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
+    def validate(
+        self, element: IElement, schema_info: Optional[ISchemaInfo] = None
+    ) -> List[str]:
         """
         Validate name uniqueness constraints
-        
+
         Args:
             element: Root element to validate
             schema_info: Optional schema information (not used by this validator)
-            
+
         Returns:
             List of validation error messages
         """
@@ -29,10 +31,10 @@ class XoscUniquenessValidator:
     def _validate_unique_element_names(self, element: IElement) -> List[str]:
         """
         Validate that elements have unique names on the same level
-        
+
         Args:
             element: Root element to validate
-            
+
         Returns:
             List of validation errors
         """

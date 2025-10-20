@@ -5,6 +5,7 @@ Handles exporting scenarios to various formats
 
 from typing import List
 from pathlib import Path
+import xml.etree.ElementTree
 from xml.etree.ElementTree import ElementTree, tostring
 from xml.dom import minidom
 
@@ -41,17 +42,17 @@ class ExportPlugin(IExportPlugin):
             description="Exports scenarios to OpenSCENARIO XML format",
             author="OpenSCENARIO Builder",
             license="MIT",
-            tags=["export", "xml", "openscenario"]
+            tags=["export", "xml", "openscenario"],
         )
 
     def export_scenario(self, scenario: IElement, output_path: str) -> bool:
         """Export scenario to XML format"""
         try:
             # Use the Element's built-in XML conversion which handles namespaces properly
-            formatted_xml = scenario.to_xml_string(pretty=True, encoding='unicode')
+            formatted_xml = scenario.to_xml_string(pretty=True, encoding="unicode")
 
             # Write to file
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 f.write(formatted_xml)
 
             return True
@@ -72,7 +73,7 @@ class ExportPlugin(IExportPlugin):
             return "Standard XML format (.xml)"
         return f"Export to {format_ext.upper()} format"
 
-    def _element_to_xml(self, element: IElement) -> 'xml.etree.ElementTree.Element':
+    def _element_to_xml(self, element: IElement) -> xml.etree.ElementTree.Element:
         """Convert an Element to XML ElementTree element"""
         from xml.etree.ElementTree import Element
 

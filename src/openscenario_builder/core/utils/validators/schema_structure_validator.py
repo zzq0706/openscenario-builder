@@ -7,22 +7,22 @@ from typing import Dict, List, Optional
 
 from openscenario_builder.core.utils.validation_helpers import ValidationUtils
 
-from openscenario_builder.interfaces import (
-    IElement,
-    ISchemaInfo,
-    IElementDefinition
-)
+from openscenario_builder.interfaces import IElement, ISchemaInfo, IElementDefinition
+
+
 class XoscSchemaStructureValidator:
     """Validates element structure, attributes, and children against schema"""
 
-    def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
+    def validate(
+        self, element: IElement, schema_info: Optional[ISchemaInfo] = None
+    ) -> List[str]:
         """
         Validate element structure against schema
-        
+
         Args:
             element: Root element to validate
             schema_info: Schema information for validation
-            
+
         Returns:
             List of validation error messages
         """
@@ -37,17 +37,15 @@ class XoscSchemaStructureValidator:
         return errors
 
     def _validate_element_recursively(
-        self,
-        element: IElement,
-        schema_info: ISchemaInfo
+        self, element: IElement, schema_info: ISchemaInfo
     ) -> List[str]:
         """
         Recursively validate an element and all its children against schema
-        
+
         Args:
             element: Element to validate
             schema_info: Schema information
-            
+
         Returns:
             List of validation errors
         """
@@ -65,17 +63,15 @@ class XoscSchemaStructureValidator:
         return errors
 
     def _validate_element_against_schema(
-        self,
-        element: IElement,
-        schema_info: ISchemaInfo
+        self, element: IElement, schema_info: ISchemaInfo
     ) -> List[str]:
         """
         Validate a single element against the schema
-        
+
         Args:
             element: Element to validate
             schema_info: Schema information
-            
+
         Returns:
             List of validation errors
         """
@@ -95,14 +91,14 @@ class XoscSchemaStructureValidator:
         # Validate attributes
         errors.extend(
             self._validate_element_attributes(
-                element,
-                element_def,
-                schema_info.simple_type_definitions
+                element, element_def, schema_info.simple_type_definitions
             )
         )
 
         # Validate children structure
-        errors.extend(self._validate_element_children(element, element_def, schema_info))
+        errors.extend(
+            self._validate_element_children(element, element_def, schema_info)
+        )
 
         return errors
 
@@ -110,16 +106,16 @@ class XoscSchemaStructureValidator:
         self,
         element: IElement,
         element_def: IElementDefinition,
-        simple_type_definitions: Dict[str, List[str]]
+        simple_type_definitions: Dict[str, List[str]],
     ) -> List[str]:
         """
         Validate element attributes against schema definition
-        
+
         Args:
             element: Element to validate
             element_def: Element definition from schema
             simple_type_definitions: Simple type definitions from schema
-            
+
         Returns:
             List of validation errors
         """
@@ -142,7 +138,9 @@ class XoscSchemaStructureValidator:
             attr_value = element.attrs.get(attr_name)
 
             # Check required attributes
-            if attr_def.required and not ValidationUtils.is_valid_attribute_value(attr_value or ""):
+            if attr_def.required and not ValidationUtils.is_valid_attribute_value(
+                attr_value or ""
+            ):
                 attr_type = attr_def.type
                 error_msg = (
                     f"REQUIRED_ATTRIBUTE_ERROR: Required attribute '{attr_name}' is missing, "
@@ -158,7 +156,7 @@ class XoscSchemaStructureValidator:
                 attr_type = attr_def.type
 
                 # Skip parameter references for type validation
-                if attr_value.startswith('$'):
+                if attr_value.startswith("$"):
                     continue
 
                 if not ValidationUtils.validate_attribute_type(attr_value, attr_type):
@@ -171,8 +169,12 @@ class XoscSchemaStructureValidator:
 
                 # Validate against enumerated values if defined
                 attr_key = next(
-                    (key for key in simple_type_definitions.keys() if key.lower() == attr_name.lower()),
-                    None
+                    (
+                        key
+                        for key in simple_type_definitions.keys()
+                        if key.lower() == attr_name.lower()
+                    ),
+                    None,
                 )
                 if attr_key:
                     if attr_value not in simple_type_definitions[attr_key]:
@@ -191,16 +193,16 @@ class XoscSchemaStructureValidator:
         self,
         element: IElement,
         element_def: IElementDefinition,
-        schema_info: ISchemaInfo
+        schema_info: ISchemaInfo,
     ) -> List[str]:
         """
         Validate element children against schema definition
-        
+
         Args:
             element: Element to validate
             element_def: Element definition from schema
             schema_info: Schema information
-            
+
         Returns:
             List of validation errors
         """
@@ -208,8 +210,7 @@ class XoscSchemaStructureValidator:
 
         # Expand group references to get all valid child elements
         valid_children = ValidationUtils.expand_children_with_groups(
-            element_def.children,
-            schema_info
+            element_def.children, schema_info
         )
 
         for child in element.children:
