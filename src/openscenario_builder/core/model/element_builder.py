@@ -89,7 +89,8 @@ class ElementBuilder:
             errors = self.factory.validate_child_addition(self._tag, child.tag)
             if errors:
                 raise ValueError(
-                    f"Cannot add child '{child.tag}' to '{self._tag}': {'; '.join(errors)}"
+                    f"Cannot add child '{child.tag}' to '{self._tag}': "
+                    f"{'; '.join(errors)}"
                 )
 
         self._children.append(child)
@@ -114,7 +115,8 @@ class ElementBuilder:
                 errors = self.factory.validate_child_addition(self._tag, child.tag)
                 if errors:
                     raise ValueError(
-                        f"Cannot add child '{child.tag}' to '{self._tag}': {'; '.join(errors)}"
+                        f"Cannot add child '{child.tag}' to '{self._tag}': "
+                        f"{'; '.join(errors)}"
                     )
 
         self._children.extend(children)

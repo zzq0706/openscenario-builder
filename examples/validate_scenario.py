@@ -21,7 +21,7 @@ def validate_scenario(file_path: str, schema_path: str):
     print(f"✓ Schema loaded ({len(schema_info.elements)} elements)")
 
     # Import scenario
-    print(f"\nImporting scenario...")
+    print("\nImporting scenario...")
     importer = ImportPlugin()
     scenario = importer.import_scenario(file_path)
 
@@ -32,7 +32,7 @@ def validate_scenario(file_path: str, schema_path: str):
     print(f"✓ Scenario imported: {scenario.tag}")
 
     # Initialize plugin manager and load validators
-    print(f"\nLoading validation plugins...")
+    print("\nLoading validation plugins...")
     plugin_manager = PluginManager()
 
     # Add plugin path
@@ -50,7 +50,7 @@ def validate_scenario(file_path: str, schema_path: str):
     print(f"✓ Loaded {loaded['validator']} validator(s)")
 
     # Validate
-    print(f"\nValidating scenario...")
+    print("\nValidating scenario...")
     errors = plugin_manager.validate_scenario(scenario, schema_info)
 
     if errors:
@@ -68,7 +68,8 @@ if __name__ == "__main__":
         print("Usage: python validate_scenario.py <scenario.xosc> <schema.xsd>")
         print("\nExample:")
         print(
-            "  python validate_scenario.py simple_scenario.xosc schemas/OpenSCENARIO_v1_3.xsd"
+            "  python validate_scenario.py "
+            "simple_scenario.xosc schemas/OpenSCENARIO_v1_3.xsd"
         )
         sys.exit(1)
 

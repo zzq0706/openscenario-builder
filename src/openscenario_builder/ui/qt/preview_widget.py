@@ -4,7 +4,6 @@ Displays the generated XML with syntax highlighting
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QHBoxLayout, QPushButton
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QTextCharFormat, QSyntaxHighlighter, QColor
 
 

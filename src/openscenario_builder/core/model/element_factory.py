@@ -3,12 +3,10 @@ Schema-Aware Element Factory for OpenSCENARIO Builder
 Provides creation-time validation and type-safe element construction
 """
 
-from typing import Dict, List, Optional, Set, Any
+from typing import Dict, List, Optional, Any
 from openscenario_builder.interfaces import (
     ISchemaInfo,
     IElement,
-    IElementDefinition,
-    IChildElementInfo,
 )
 from openscenario_builder.core.model.element import Element
 
@@ -137,7 +135,8 @@ class ElementFactory:
                     attrs[attr_name] = ""
             else:
                 raise ValueError(
-                    f"Element '{tag}' is missing required attributes: {', '.join(missing_attrs)}"
+                    f"Element '{tag}' is missing required attributes: "
+                    f"{', '.join(missing_attrs)}"
                 )
 
         return self.create(tag, attrs)

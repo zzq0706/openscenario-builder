@@ -6,7 +6,7 @@ Tests that all interface contracts are properly defined and enforceable
 import pytest
 from abc import ABC
 from datetime import datetime
-from typing import Dict, List
+from typing import List
 
 from openscenario_builder.interfaces import (
     IElement,

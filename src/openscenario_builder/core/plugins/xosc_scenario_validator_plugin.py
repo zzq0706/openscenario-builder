@@ -74,7 +74,11 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
         return PluginMetadata(
             name="XOSC Scenario Comprehensive Validator",
             version="3.1.0",
-            description="Comprehensive validator orchestrating specialized validators for schema, references, data types, structure, uniqueness, and occurrence constraints",
+            description=(
+                "Comprehensive validator orchestrating specialized validators "
+                "for schema, references, data types, structure, uniqueness, "
+                "and occurrence constraints"
+            ),
             author="Ziqi Zhou",
             tags=["validation", "schema", "xosc", "comprehensive"],
         )
