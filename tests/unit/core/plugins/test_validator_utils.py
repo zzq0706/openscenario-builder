@@ -4,7 +4,6 @@ Tests ValidationUtils, ElementCollector, and RecursiveValidator classes
 """
 
 import pytest
-from datetime import datetime
 from openscenario_builder.core.utils.validation_helpers import (
     ValidationUtils,
     ElementCollector,
@@ -12,7 +11,6 @@ from openscenario_builder.core.utils.validation_helpers import (
 )
 from openscenario_builder.core.model.element import Element
 from openscenario_builder.core.schema.parser import SchemaInfo, GroupDefinition
-from openscenario_builder.interfaces import IGroupDefinition
 
 
 class MockGroupDefinition(GroupDefinition):
@@ -316,7 +314,6 @@ class TestRecursiveValidator:
     def test_traverse_and_validate_single_element(self):
         """Should validate single element"""
         root = Element("Root")
-        errors = []
 
         def validation_func(elem):
             return [f"Error in {elem.tag}"]

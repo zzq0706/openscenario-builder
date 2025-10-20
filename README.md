@@ -1,6 +1,6 @@
 # OpenSCENARIO Builder
 
-A professional, extensible tool for creating and editing OpenSCENARIO files with a modern Python architecture.
+A professional, extensible tool for creating and editing and validating OpenSCENARIO files with a modern Python architecture.
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -11,7 +11,7 @@ A professional, extensible tool for creating and editing OpenSCENARIO files with
 - **Schema-Driven**: Automatically generates element definitions from OpenSCENARIO XSD schemas
 - **Plugin Architecture**: Extensible through custom plugins for validation, import/export, and UI
 - **Qt-based UI**: Modern desktop application with intuitive interface
-- **Real-time Validation**: Comprehensive schema validation with detailed error messages
+- **Real-time Validation**: Comprehensive scenario validation against schema with detailed error messages
 - **Cross-Platform**: Works on Windows, macOS, and Linux
 
 ## Installation
@@ -52,36 +52,19 @@ python -m openscenario_builder
 
 ## Examples
 
-- **create_validated_scenario.py**: Schema-aware element creation with validation
-- **demo_schema_aware.py**: Interactive demonstration of validation benefits
 - **create_simple_scenario.py**: Basic OpenSCENARIO file creation
+- **create_validated_scenario.py**: Schema-aware element creation with validation
 - **validate_scenario.py**: Validate existing XOSC files
 
 ```bash
+# Basic creation
+python examples/create_simple_scenario.py
+
 # Schema-aware creation
 python examples/create_validated_scenario.py
 
-# Validation demonstration
-python examples/demo_schema_aware.py
-
 # Validate a scenario
 python examples/validate_scenario.py scenario.xosc schemas/OpenSCENARIO_v1_3.xsd
-```
-
-## Plugin System
-
-Create custom plugins to extend functionality:
-
-```python
-from openscenario_builder.interfaces import IElementPlugin
-
-class MyPlugin(IElementPlugin):
-    def get_element_name(self) -> str:
-        return "MyElement"
-
-    def validate(self, element) -> List[str]:
-        # Custom validation
-        return []
 ```
 
 ## License

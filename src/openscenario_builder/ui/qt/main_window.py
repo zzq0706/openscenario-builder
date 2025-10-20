@@ -3,35 +3,22 @@ Qt-based Main Window for OpenSCENARIO Builder
 Decoupled from core business logic
 """
 
-import sys
 from typing import Optional, Dict, Any
 from PySide6.QtWidgets import (
-    QApplication,
     QMainWindow,
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QLabel,
-    QComboBox,
-    QFormLayout,
-    QLineEdit,
-    QPushButton,
-    QTreeWidget,
-    QTreeWidgetItem,
     QTextEdit,
     QFileDialog,
-    QMenu,
     QSplitter,
     QTabWidget,
     QMessageBox,
     QStatusBar,
     QToolBar,
-    QDockWidget,
-    QListWidget,
-    QListWidgetItem,
 )
-from PySide6.QtGui import QAction, QIcon, QFont
-from PySide6.QtCore import Qt, Signal, QObject, QThread
+from PySide6.QtGui import QAction
+from PySide6.QtCore import Qt, Signal, QObject
 
 from openscenario_builder.core.model.element import Element
 from openscenario_builder.core.schema.parser import SchemaInfo

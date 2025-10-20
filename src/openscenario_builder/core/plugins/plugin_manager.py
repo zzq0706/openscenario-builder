@@ -162,7 +162,8 @@ class PluginManager:
                         logger.info(f"Loaded element plugin: {plugin.metadata.name}")
                     else:
                         logger.info(
-                            f"Skipped deactivated element plugin: {plugin.metadata.name}"
+                            f"Skipped deactivated element plugin: "
+                            f"{plugin.metadata.name}"
                         )
 
                 elif issubclass(obj, IValidatorPlugin) and obj != IValidatorPlugin:
@@ -174,7 +175,8 @@ class PluginManager:
                         logger.info(f"Loaded validator plugin: {plugin.metadata.name}")
                     else:
                         logger.info(
-                            f"Skipped deactivated validator plugin: {plugin.metadata.name}"
+                            f"Skipped deactivated validator plugin: "
+                            f"{plugin.metadata.name}"
                         )
 
                 elif issubclass(obj, IUIPlugin) and obj != IUIPlugin:
@@ -515,7 +517,8 @@ class PluginManager:
                                     )
                             except Exception as e:
                                 logger.warning(
-                                    f"Failed to inspect plugin {name} from {file_path}: {e}"
+                                    f"Failed to inspect plugin {name} "
+                                    f"from {file_path}: {e}"
                                 )
 
                 except Exception as e:

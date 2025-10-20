@@ -13,7 +13,6 @@ from PySide6.QtWidgets import (
     QPushButton,
     QScrollArea,
     QFrame,
-    QHBoxLayout,
 )
 from PySide6.QtCore import Qt
 
