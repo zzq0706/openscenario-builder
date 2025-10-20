@@ -11,6 +11,7 @@ A professional, extensible tool for creating and editing OpenSCENARIO files with
 - **Schema-Driven**: Automatically generates element definitions from OpenSCENARIO XSD schemas
 - **Plugin Architecture**: Extensible through custom plugins for validation, import/export, and UI
 - **Qt-based UI**: Modern desktop application with intuitive interface
+- **CLI Validator**: Command-line tool for batch validation and CI/CD integration
 - **Real-time Validation**: Comprehensive schema validation with detailed error messages
 - **Cross-Platform**: Works on Windows, macOS, and Linux
 
@@ -74,8 +75,42 @@ pip install openscenario-builder
 
 ## Quick Start
 
-### Run the QT-based application
+### GUI Application
+
+Launch the Qt-based graphical interface:
+
+```bash
+openscenario-builder
+```
+
+Or with Python module syntax:
+
+```bash
 python -m openscenario_builder
+```
+
+### CLI Validator
+
+Validate OpenSCENARIO files from the command line (perfect for CI/CD):
+
+```bash
+# Validate a single file
+openscenario-validate scenario.xosc
+
+# Validate multiple files
+openscenario-validate scenario1.xosc scenario2.xosc
+
+# Validate all files in a directory
+openscenario-validate scenarios/
+
+# Verbose output with detailed errors
+openscenario-validate --verbose scenario.xosc
+
+# Use in CI/CD pipelines
+openscenario-validate --verbose scenarios/ && echo "All scenarios valid!"
+```
+
+See [CLI_USAGE.md](docs/CLI_USAGE.md) for detailed documentation and CI/CD integration examples.
 
 ## Examples
 
