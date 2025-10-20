@@ -8,7 +8,7 @@ import sys
 import argparse
 import logging
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import List, Optional
 import glob
 
 from openscenario_builder.core.schema.parser import parse_openscenario_schema
