@@ -5,22 +5,57 @@ Provides a robust, validated element structure with metadata support
 
 from openscenario_builder.interfaces import ISchemaInfo, IElement, IElementMetadata
 from typing import Dict, List, Optional, Any, Union
-from dataclasses import dataclass, field
 from xml.etree.ElementTree import Element as XMLElement, SubElement, tostring
 from xml.dom import minidom
-import uuid
 from datetime import datetime
 
 
-@dataclass
 class ElementMetadata(IElementMetadata):
     """Metadata for an element"""
-    created_at: datetime = field(default_factory=datetime.now)
-    modified_at: datetime = field(default_factory=datetime.now)
-    created_by: str = ""
-    description: str = ""
-    tags: List[str] = field(default_factory=list)
-    validation_errors: List[str] = field(default_factory=list)
+    
+    def __init__(
+        self,
+        created_at: Optional[datetime] = None,
+        modified_at: Optional[datetime] = None,
+        created_by: str = "",
+        description: str = "",
+        tags: Optional[List[str]] = None,
+        validation_errors: Optional[List[str]] = None
+    ):
+        self._created_at = created_at or datetime.now()
+        self._modified_at = modified_at or datetime.now()
+        self._created_by = created_by
+        self._description = description
+        self._tags = tags or []
+        self._validation_errors = validation_errors or []
+    
+    @property
+    def created_at(self) -> datetime:
+        return self._created_at
+    
+    @property
+    def modified_at(self) -> datetime:
+        return self._modified_at
+    
+    @modified_at.setter
+    def modified_at(self, value: datetime) -> None:
+        self._modified_at = value
+    
+    @property
+    def created_by(self) -> str:
+        return self._created_by
+    
+    @property
+    def description(self) -> str:
+        return self._description
+    
+    @property
+    def tags(self) -> List[str]:
+        return self._tags
+    
+    @property
+    def validation_errors(self) -> List[str]:
+        return self._validation_errors
 
 
 class Element(IElement):
@@ -29,75 +64,89 @@ class Element(IElement):
     """
 
     def __init__(self, tag: str, attrs: Optional[Dict[str, str]] = None,
-                 children: Optional[List['Element']] = None,
+                 children: Optional[List[IElement]] = None,
                  metadata: Optional[ElementMetadata] = None):
-        self.tag = tag
-        self.attrs = attrs or {}
-        self.children = children or []
-        self.metadata = metadata or ElementMetadata()
-        self._id = str(uuid.uuid4())
-
+        self._tag = tag
+        self._attrs = attrs or {}
+        self._children: List[IElement] = children or []
+        self._metadata = metadata or ElementMetadata()
+    
     @property
-    def id(self) -> str:
-        """Unique identifier for this element"""
-        return self._id
+    def tag(self) -> str:
+        """Element tag name"""
+        return self._tag
+    
+    @property
+    def attrs(self) -> Dict[str, str]:
+        """Element attributes"""
+        return self._attrs
+    
+    @property
+    def children(self) -> List[IElement]:
+        """Child elements"""
+        return self._children
+    
+    @property
+    def metadata(self) -> IElementMetadata:
+        """Element metadata"""
+        return self._metadata
 
-    def add_child(self, child: 'Element') -> None:
+    def add_child(self, child: IElement) -> None:
         """Add a child element"""
-        if child not in self.children:
-            self.children.append(child)
-            self.metadata.modified_at = datetime.now()
+        if child not in self._children:
+            self._children.append(child)
+            self._metadata.modified_at = datetime.now()
 
-    def remove_child(self, child: 'Element') -> bool:
+    def remove_child(self, child: IElement) -> bool:
         """Remove a child element, returns True if found and removed"""
-        if child in self.children:
-            self.children.remove(child)
-            self.metadata.modified_at = datetime.now()
+        if child in self._children:
+            self._children.remove(child)
+            self._metadata.modified_at = datetime.now()
             return True
         return False
 
-    def insert_child(self, index: int, child: 'Element') -> None:
+    def insert_child(self, index: int, child: IElement) -> None:
         """Insert a child element at a specific index"""
-        if child not in self.children:
-            self.children.insert(index, child)
-            self.metadata.modified_at = datetime.now()
+        if child not in self._children:
+            self._children.insert(index, child)
+            self._metadata.modified_at = datetime.now()
 
-    def get_child_by_tag(self, tag: str) -> Optional['Element']:
+    def get_child_by_tag(self, tag: str) -> Optional[IElement]:
         """Get the first child element with the specified tag"""
-        for child in self.children:
+        for child in self._children:
             if child.tag == tag:
                 return child
         return None
 
-    def get_children_by_tag(self, tag: str) -> List['Element']:
+    def get_children_by_tag(self, tag: str) -> List[IElement]:
         """Get all child elements with the specified tag"""
-        return [child for child in self.children if child.tag == tag]
+        return [child for child in self._children if child.tag == tag]
 
     def set_attribute(self, name: str, value: str) -> None:
         """Set an attribute value"""
-        self.attrs[name] = value
-        self.metadata.modified_at = datetime.now()
+        self._attrs[name] = value
+        self._metadata.modified_at = datetime.now()
 
     def get_attribute(self, name: str, default: str = "") -> str:
         """Get an attribute value"""
-        return self.attrs.get(name, default)
+        return self._attrs.get(name, default)
 
     def remove_attribute(self, name: str) -> bool:
         """Remove an attribute, returns True if found and removed"""
-        if name in self.attrs:
-            del self.attrs[name]
-            self.metadata.modified_at = datetime.now()
+        if name in self._attrs:
+            del self._attrs[name]
+            self._metadata.modified_at = datetime.now()
             return True
         return False
 
     def has_attribute(self, name: str) -> bool:
         """Check if element has a specific attribute"""
-        return name in self.attrs
+        return name in self._attrs
 
     def to_etree_element(self) -> XMLElement:
         """Convert to XML ElementTree element"""
-        elem = XMLElement(self.tag, {k: str(v) for k, v in self.attrs.items()})
-        for child in self.children:
+        elem = XMLElement(self._tag, {k: str(v) for k, v in self._attrs.items()})
+        for child in self._children:
             elem.append(child.to_etree_element())
         return elem
 
@@ -142,17 +191,16 @@ class Element(IElement):
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation"""
         return {
-            "tag": self.tag,
-            "attrs": self.attrs,
-            "children": [child.to_dict() for child in self.children],
+            "tag": self._tag,
+            "attrs": self._attrs,
+            "children": [child.to_dict() for child in self._children],
             "metadata": {
-                "created_at": self.metadata.created_at.isoformat(),
-                "modified_at": self.metadata.modified_at.isoformat(),
-                "created_by": self.metadata.created_by,
-                "description": self.metadata.description,
-                "tags": self.metadata.tags
-            },
-            "id": self._id
+                "created_at": self._metadata.created_at.isoformat(),
+                "modified_at": self._metadata.modified_at.isoformat(),
+                "created_by": self._metadata.created_by,
+                "description": self._metadata.description,
+                "tags": self._metadata.tags
+            }
         }
 
     @classmethod
@@ -171,7 +219,6 @@ class Element(IElement):
                 tags=data["metadata"]["tags"]
             )
         )
-        element._id = data.get("id", str(uuid.uuid4()))
 
         # Add children recursively
         for child_data in data.get("children", []):
@@ -199,34 +246,22 @@ class Element(IElement):
         """Create a deep copy of this element"""
         return self.from_dict(self.to_dict())
 
-    def find_element_by_id(self, element_id: str) -> Optional['Element']:
-        """Find an element by its ID in the subtree"""
-        if self._id == element_id:
-            return self
-
-        for child in self.children:
-            result = child.find_element_by_id(element_id)
-            if result:
-                return result
-
-        return None
-
-    def find_elements_by_tag(self, tag: str) -> List['Element']:
+    def find_elements_by_tag(self, tag: str) -> List[IElement]:
         """Find all elements with the specified tag in the subtree"""
-        results = []
-        if self.tag == tag:
+        results: List[IElement] = []
+        if self._tag == tag:
             results.append(self)
 
-        for child in self.children:
+        for child in self._children:
             results.extend(child.find_elements_by_tag(tag))
 
         return results
 
     def __str__(self) -> str:
         """String representation"""
-        attrs_str = " ".join([f'{k}="{v}"' for k, v in self.attrs.items()])
-        return f"<{self.tag} {attrs_str}> ({len(self.children)} children)"
+        attrs_str = " ".join([f'{k}="{v}"' for k, v in self._attrs.items()])
+        return f"<{self._tag} {attrs_str}> ({len(self._children)} children)"
 
     def __repr__(self) -> str:
         """Detailed representation"""
-        return f"Element(tag='{self.tag}', attrs={self.attrs}, children={len(self.children)})"
+        return f"Element(tag='{self._tag}', attrs={self._attrs}, children={len(self._children)})"

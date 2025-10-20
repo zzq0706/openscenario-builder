@@ -245,16 +245,15 @@ class PluginManager:
         """Validate an element using its plugin"""
         plugin = self.element_plugins.get(element.tag)
         if plugin:
-            return plugin.validate_element(element)
+                return plugin.validate(element)
         return []
 
     def validate_scenario(self, root_element: IElement, schema_info: ISchemaInfo) -> List[str]:
         """Validate a scenario using all validator plugins"""
         errors = []
         for validator in self.validator_plugins.values():
-
             try:
-                validator_errors = validator.validate_element(
+                validator_errors = validator.validate(
                     root_element, schema_info)
                 errors.extend(validator_errors)
                 print(f"validator: {validator.get_name()}")

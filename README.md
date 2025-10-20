@@ -14,33 +14,6 @@ A professional, extensible tool for creating and editing OpenSCENARIO files with
 - **Real-time Validation**: Comprehensive schema validation with detailed error messages
 - **Cross-Platform**: Works on Windows, macOS, and Linux
 
-## Architecture
-
-```
-openscenario-builder/
-├── src/
-│   └── openscenario_builder/     # Main package
-│       ├── __init__.py
-│       ├── __main__.py           # Entry point
-│       ├── interfaces/           # Interface definitions (contracts)
-│       ├── core/                 # Core implementation
-│       │   ├── schema/           # XSD schema parsing
-│       │   ├── model/            # Element data models
-│       │   └── plugins/          # Plugin system
-│       └── ui/                   # User interface
-│           └── qt/               # Qt-based UI components
-├── tests/                        # Test suite
-├── examples/                     # Example scripts
-├── docs/                         # Documentation
-├── .github/                      # GitHub workflows and templates
-├── pyproject.toml                # Project configuration
-├── README.md                     # This file
-├── LICENSE                       # MIT License
-├── CONTRIBUTING.md               # Contribution guidelines
-├── CODE_OF_CONDUCT.md            # Code of conduct
-└── CHANGELOG.md                  # Version history
-```
-
 ## Installation
 
 ### From Source
@@ -89,7 +62,7 @@ Check out the `examples/` directory for more:
 python examples/create_simple_scenario.py
 
 # Validate a scenario
-python examples/validate_scenario.py scenario.xosc src/openscenario_builder/core/schema/OpenSCENARIO_v1_3.xsd
+python examples/validate_scenario.py scenario.xosc schemas/OpenSCENARIO_v1_3.xsd
 ```
 
 ## Plugin System
@@ -103,7 +76,7 @@ class MyPlugin(IElementPlugin):
     def get_element_name(self) -> str:
         return "MyElement"
 
-    def validate_element(self, element) -> List[str]:
+    def validate(self, element) -> List[str]:
         # Custom validation
         return []
 ```

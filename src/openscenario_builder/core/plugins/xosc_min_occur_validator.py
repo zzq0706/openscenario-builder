@@ -43,7 +43,7 @@ class XoscMinOccurValidatorPlugin(IValidatorPlugin):
         """Get the validator name"""
         return "XOSC Minimum Occurrence Validator"
 
-    def validate_element(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
+    def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
         """Validate minimum occurrence constraints for the element and its children
 
         Args:

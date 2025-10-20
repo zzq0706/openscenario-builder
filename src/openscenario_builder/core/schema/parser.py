@@ -4,60 +4,199 @@ Parses XSD files and maintains element hierarchy and relationships
 """
 
 import xml.etree.ElementTree as ET
-from typing import Dict, List, Optional, Set, Tuple
-from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Set, Tuple, Mapping
 from pathlib import Path
 from openscenario_builder.interfaces import IElementDefinition, IGroupDefinition, ISchemaInfo, IAttributeDefinition, IChildElementInfo
 
 
-@dataclass
 class AttributeDefinition(IAttributeDefinition):
     """Concrete implementation of attribute definition"""
-    name: str
-    type: str
-    required: bool
+    
+    def __init__(self, name: str, type: str, required: bool):
+        self._name = name
+        self._type = type
+        self._required = required
+    
+    @property
+    def name(self) -> str:
+        return self._name
+    
+    @property
+    def type(self) -> str:
+        return self._type
+    
+    @property
+    def required(self) -> bool:
+        return self._required
 
-@dataclass
+
 class ChildElementInfo(IChildElementInfo):
     """Information about a child element including occurrence constraints"""
-    name: str
-    min_occur: int = 1
-    max_occur: str = "1"  # Can be "unbounded" or a number
+    
+    def __init__(self, name: str, min_occur: int = 1, max_occur: str = "1"):
+        self._name = name
+        self._min_occur = min_occur
+        self._max_occur = max_occur
+    
+    @property
+    def name(self) -> str:
+        return self._name
+    
+    @property
+    def min_occur(self) -> int:
+        return self._min_occur
+    
+    @property
+    def max_occur(self) -> str:
+        return self._max_occur
 
 
-@dataclass
 class ElementDefinition(IElementDefinition):
     """Complete definition of an XML element"""
-    name: str
-    attributes: List[AttributeDefinition]
-    children: List[str]
-    parent: Optional[str] = None
-    description: str = ""
-    is_abstract: bool = False
-    is_root: bool = False
-    child_occurrence_info: Dict[str, ChildElementInfo] = field(default_factory=dict)
-    content_model_type: str = "sequence"  # "sequence", "choice", or "all"
+    
+    def __init__(
+        self,
+        name: str,
+        attributes: List[IAttributeDefinition],
+        children: List[str],
+        parent: Optional[str] = None,
+        description: str = "",
+        is_abstract: bool = False,
+        is_root: bool = False,
+        child_occurrence_info: Optional[Dict[str, IChildElementInfo]] = None,
+        content_model_type: str = "sequence"
+    ):
+        self._name = name
+        self._attributes = attributes
+        self._children = children
+        self.parent = parent
+        self._description = description
+        self._is_abstract = is_abstract
+        self._is_root = is_root
+        self._child_occurrence_info = child_occurrence_info or {}
+        self._content_model_type = content_model_type
+    
+    @property
+    def name(self) -> str:
+        return self._name
+    
+    @property
+    def attributes(self) -> List[IAttributeDefinition]:
+        return self._attributes
+    
+    @property
+    def children(self) -> List[str]:
+        return self._children
+    
+    @property
+    def is_abstract(self) -> bool:
+        return self._is_abstract
+    
+    @is_abstract.setter
+    def is_abstract(self, value: bool) -> None:
+        self._is_abstract = value
+    
+    @property
+    def is_root(self) -> bool:
+        return self._is_root
+    
+    @is_root.setter
+    def is_root(self, value: bool) -> None:
+        self._is_root = value
+    
+    @property
+    def description(self) -> str:
+        return self._description
+    
+    @property
+    def child_occurrence_info(self) -> Dict[str, IChildElementInfo]:
+        return self._child_occurrence_info
+    
+    @property
+    def content_model_type(self) -> str:
+        return self._content_model_type
 
 
-@dataclass
 class GroupDefinition(IGroupDefinition):
     """Definition of an XSD group"""
-    name: str
-    children: List[str]
-    is_choice: bool = False
-    is_sequence: bool = False
-    is_all: bool = False
-    child_occurrence_info: Dict[str, ChildElementInfo] = field(default_factory=dict)
+    
+    def __init__(
+        self,
+        name: str,
+        children: List[str],
+        is_choice: bool = False,
+        is_sequence: bool = False,
+        is_all: bool = False,
+        child_occurrence_info: Optional[Dict[str, IChildElementInfo]] = None
+    ):
+        self._name = name
+        self._children = children
+        self._is_choice = is_choice
+        self._is_sequence = is_sequence
+        self._is_all = is_all
+        self._child_occurrence_info = child_occurrence_info or {}
+    
+    @property
+    def name(self) -> str:
+        return self._name
+    
+    @property
+    def children(self) -> List[str]:
+        return self._children
+    
+    @property
+    def is_choice(self) -> bool:
+        return self._is_choice
+    
+    @property
+    def is_sequence(self) -> bool:
+        return self._is_sequence
+    
+    @property
+    def is_all(self) -> bool:
+        return self._is_all
+    
+    @property
+    def child_occurrence_info(self) -> Dict[str, IChildElementInfo]:
+        return self._child_occurrence_info
 
 
-@dataclass
 class SchemaInfo(ISchemaInfo):
     """Complete schema information with hierarchy"""
-    elements: Dict[str, ElementDefinition]
-    groups: Dict[str, GroupDefinition]
-    root_elements: List[str]
-    element_hierarchy: Dict[str, List[str]]
-    simple_type_definitions: Dict[str, List[str]]
+    
+    def __init__(
+        self,
+        elements: Dict[str, 'ElementDefinition'],
+        groups: Dict[str, 'GroupDefinition'],
+        root_elements: List[str],
+        element_hierarchy: Dict[str, List[str]],
+        simple_type_definitions: Dict[str, List[str]]
+    ):
+        self._elements = elements
+        self._groups = groups
+        self._root_elements = root_elements
+        self._element_hierarchy = element_hierarchy
+        self._simple_type_definitions = simple_type_definitions
+    
+    @property
+    def elements(self) -> Mapping[str, IElementDefinition]:
+        return self._elements
+    
+    @property
+    def groups(self) -> Mapping[str, IGroupDefinition]:
+        return self._groups
+    
+    @property
+    def root_elements(self) -> List[str]:
+        return self._root_elements
+    
+    @property
+    def element_hierarchy(self) -> Dict[str, List[str]]:
+        return self._element_hierarchy
+    
+    @property
+    def simple_type_definitions(self) -> Dict[str, List[str]]:
+        return self._simple_type_definitions
 
 
 class XSDParser:
@@ -289,12 +428,12 @@ class XSDParser:
             is_required = use_attr == "required"
 
             if attr_name:
-                # Create AttributeDefinition with proper structure
-                attr_def: AttributeDefinition = {
-                    "name": attr_name,
-                    "type": attr_type,
-                    "required": is_required
-                }
+                # Create AttributeDefinition object
+                attr_def = AttributeDefinition(
+                    name=attr_name,
+                    type=attr_type,
+                    required=is_required
+                )
                 result["attributes"].append(attr_def)
 
         # Parse child elements from various content models
@@ -425,7 +564,7 @@ class XSDParser:
                     elements[name] = ElementDefinition(
                         name=name,
                         attributes=[
-                            {"name": "value", "type": "string", "required": False}],
+                            AttributeDefinition(name="value", type="string", required=False)],
                         children=[],
                         is_abstract=False,
                         is_root=False,
@@ -453,7 +592,7 @@ class XSDParser:
                     elements[name] = ElementDefinition(
                         name=name,
                         attributes=[
-                            {"name": "value", "type": "string", "required": False}],
+                            AttributeDefinition(name="value", type="string", required=False)],
                         children=[],
                         is_abstract=False,
                         is_root=False
@@ -511,8 +650,15 @@ if __name__ == "__main__":
     from pathlib import Path
 
     # Find the schema file relative to the current file
+    # Try to find the schema file
+    # First try: schemas/ directory at project root (recommended location)
     current_dir = Path(__file__).parent
-    schema_path = current_dir / "OpenSCENARIO_v1_3.xsd"
+    project_root = current_dir.parent.parent.parent  # Go up to project root
+    schema_path = project_root / "schemas" / "OpenSCENARIO_v1_3.xsd"
+    
+    # Fallback: old location in src/
+    if not schema_path.exists():
+        schema_path = current_dir / "OpenSCENARIO_v1_3.xsd"
 
     if not schema_path.exists():
         print(f"Schema file not found at: {schema_path}")
