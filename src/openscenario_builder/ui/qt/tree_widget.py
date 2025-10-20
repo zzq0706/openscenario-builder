@@ -67,7 +67,8 @@ class ScenarioTreeWidget(QTreeWidget):
         element = item.data(0, Qt.ItemDataRole.UserRole)
         if element:
             print(
-                f"TreeWidget: Item clicked, emitting element_selected for: {element.tag}")
+                f"TreeWidget: Item clicked, emitting element_selected for: {element.tag}"
+            )
             self.element_selected.emit(element)
 
     def on_context_menu(self, position):
@@ -98,8 +99,7 @@ class ScenarioTreeWidget(QTreeWidget):
                 if group_name in groups:
                     group = groups[group_name]
                     group_menu = add_menu.addMenu(f"📁 {group_name}")
-                    self._add_group_children(
-                        group_menu, group, groups, element)
+                    self._add_group_children(group_menu, group, groups, element)
                 else:
                     # Group not found, add as regular item
                     action = QAction(f"❓ {group_name} (not found)", self)
@@ -109,7 +109,10 @@ class ScenarioTreeWidget(QTreeWidget):
                 # Regular element
                 action = QAction(child_name, self)
                 action.triggered.connect(
-                    lambda checked, name=child_name: self.add_child_element(element, name))
+                    lambda checked, name=child_name: self.add_child_element(
+                        element, name
+                    )
+                )
                 add_menu.addAction(action)
 
         menu.addSeparator()
@@ -117,13 +120,14 @@ class ScenarioTreeWidget(QTreeWidget):
         # Delete action
         if element != self.controller.root_element:
             delete_action = QAction("Delete", self)
-            delete_action.triggered.connect(
-                lambda: self.delete_element(element))
+            delete_action.triggered.connect(lambda: self.delete_element(element))
             menu.addAction(delete_action)
 
         menu.exec(self.viewport().mapToGlobal(position))
 
-    def _add_group_children(self, parent_menu: QMenu, group, groups: dict, parent_element: Element):
+    def _add_group_children(
+        self, parent_menu: QMenu, group, groups: dict, parent_element: Element
+    ):
         """Recursively add group children to menu"""
         for child_name in group.children:
             if child_name.startswith("GROUP:"):
@@ -133,18 +137,21 @@ class ScenarioTreeWidget(QTreeWidget):
                     nested_group = groups[nested_group_name]
                     nested_menu = parent_menu.addMenu(f"📁 {nested_group_name}")
                     self._add_group_children(
-                        nested_menu, nested_group, groups, parent_element)
+                        nested_menu, nested_group, groups, parent_element
+                    )
                 else:
                     # Group not found
-                    action = QAction(
-                        f"❓ {nested_group_name} (not found)", self)
+                    action = QAction(f"❓ {nested_group_name} (not found)", self)
                     action.setEnabled(False)
                     parent_menu.addAction(action)
             else:
                 # Regular element
                 action = QAction(child_name, self)
                 action.triggered.connect(
-                    lambda checked, name=child_name: self.add_child_element(parent_element, name))
+                    lambda checked, name=child_name: self.add_child_element(
+                        parent_element, name
+                    )
+                )
                 parent_menu.addAction(action)
 
     def add_child_element(self, parent_element: Element, child_name: str):

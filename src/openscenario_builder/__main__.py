@@ -16,11 +16,11 @@ def setup_logging():
     """Setup logging configuration"""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         handlers=[
             logging.StreamHandler(),
-            logging.FileHandler('openscenario_builder.log')
-        ]
+            logging.FileHandler("openscenario_builder.log"),
+        ],
     )
 
 
@@ -30,7 +30,6 @@ def find_schema_file() -> str:
     possible_paths = [
         "schemas/OpenSCENARIO_v1_3.xsd",  # Recommended location
         "src/openscenario_builder/core/schema/OpenSCENARIO_v1_3.xsd",  # Legacy location
-
     ]
 
     for path in possible_paths:
@@ -61,8 +60,8 @@ def main():
         script_dir = Path(__file__).parent
 
         plugin_paths = [
-            script_dir / "core" / "plugins",           # Built-in plugins
-            Path.cwd() / "plugins",                    # External plugins directory
+            script_dir / "core" / "plugins",  # Built-in plugins
+            Path.cwd() / "plugins",  # External plugins directory
         ]
 
         for path in plugin_paths:
@@ -98,4 +97,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

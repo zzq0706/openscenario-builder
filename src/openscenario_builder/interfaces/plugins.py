@@ -10,49 +10,49 @@ from .schema import ISchemaInfo
 
 class IPluginMetadata(ABC):
     """Abstract base class for plugin metadata structure"""
-    
+
     @property
     @abstractmethod
     def name(self) -> str:
         """Plugin name"""
         pass
-    
+
     @property
     @abstractmethod
     def version(self) -> str:
         """Plugin version"""
         pass
-    
+
     @property
     @abstractmethod
     def description(self) -> str:
         """Plugin description"""
         pass
-    
+
     @property
     @abstractmethod
     def author(self) -> str:
         """Plugin author"""
         pass
-    
+
     @property
     @abstractmethod
     def license(self) -> str:
         """Plugin license"""
         pass
-    
+
     @property
     @abstractmethod
     def homepage(self) -> str:
         """Plugin homepage"""
         pass
-    
+
     @property
     @abstractmethod
     def dependencies(self) -> Optional[List[str]]:
         """Plugin dependencies"""
         pass
-    
+
     @property
     @abstractmethod
     def tags(self) -> Optional[List[str]]:
@@ -127,7 +127,9 @@ class IValidatorPlugin(IBasePlugin):
         pass
 
     @abstractmethod
-    def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
+    def validate(
+        self, element: IElement, schema_info: Optional[ISchemaInfo] = None
+    ) -> List[str]:
         """Validate an element, optionally against the schema, return list of errors"""
         pass
 

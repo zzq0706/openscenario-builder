@@ -12,6 +12,7 @@ This is a refactored version (v3.1.0) that delegates to specialized validators:
 """
 
 from typing import List, Optional
+
 try:
     from .plugin_metadata import PluginMetadata
 except ImportError:
@@ -32,12 +33,12 @@ from openscenario_builder.interfaces import IValidatorPlugin, IElement, ISchemaI
 class XoscScenarioValidatorPlugin(IValidatorPlugin):
     """
     Comprehensive XOSC Scenario Validator Plugin
-    
+
     This validator orchestrates multiple specialized validators to provide
     comprehensive validation of OpenSCENARIO scenarios. Each specialized
     validator focuses on a specific aspect of validation, making the system
     more maintainable, testable, and flexible.
-    
+
     Architecture:
     - Schema structure validation (elements, attributes, children)
     - Reference validation (entities, parameters, variables, etc.)
@@ -49,7 +50,7 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
 
     def __init__(self):
         self._activated = True
-        
+
         # Initialize specialized validators
         self._schema_validator = XoscSchemaStructureValidator()
         self._reference_validator = XoscReferenceValidator()
@@ -75,13 +76,15 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
             version="3.1.0",
             description="Comprehensive validator orchestrating specialized validators for schema, references, data types, structure, uniqueness, and occurrence constraints",
             author="Ziqi Zhou",
-            tags=["validation", "schema", "xosc", "comprehensive"]
+            tags=["validation", "schema", "xosc", "comprehensive"],
         )
 
-    def validate(self, element: IElement, schema_info: Optional[ISchemaInfo] = None) -> List[str]:
+    def validate(
+        self, element: IElement, schema_info: Optional[ISchemaInfo] = None
+    ) -> List[str]:
         """
         Main validation method that orchestrates all specialized validators
-        
+
         Runs validators in a specific order to optimize error detection:
         1. Schema structure - catches basic structural errors first
         2. Document structure - validates OpenSCENARIO requirements
@@ -89,11 +92,11 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
         4. References - ensures all references can be resolved
         5. Data types - validates domain-specific constraints
         6. Uniqueness - checks name uniqueness constraints
-        
+
         Args:
             element: Root element to validate
             schema_info: Schema information for validation
-            
+
         Returns:
             List of all validation errors from all validators
         """

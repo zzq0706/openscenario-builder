@@ -15,9 +15,9 @@ class TestXoscDataTypeValidator:
         """Should error on negative transition time"""
         validator = XoscDataTypeValidator()
         element = Element("LightStateAction", {"transitionTime": "-1.0"})
-        
+
         errors = validator.validate(element)
-        
+
         assert len(errors) == 1
         assert "DATA_TYPE_ERROR" in errors[0]
         assert "non-negative" in errors[0]
@@ -30,18 +30,18 @@ class TestXoscDataTypeValidator:
         element2 = Element("LightStateAction", {"transitionTime": "5.5"})
         root.add_child(element1)
         root.add_child(element2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_transition_time_with_parameter(self):
         """Should skip validation for parameter references"""
         validator = XoscDataTypeValidator()
         element = Element("LightStateAction", {"transitionTime": "$Duration"})
-        
+
         errors = validator.validate(element)
-        
+
         assert len(errors) == 0
 
     def test_validate_non_positive_duration(self):
@@ -52,9 +52,9 @@ class TestXoscDataTypeValidator:
         element2 = Element("Phase", {"duration": "-1"})
         root.add_child(element1)
         root.add_child(element2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 2
         for error in errors:
             assert "DATA_TYPE_ERROR" in error
@@ -64,18 +64,18 @@ class TestXoscDataTypeValidator:
         """Should accept positive duration"""
         validator = XoscDataTypeValidator()
         element = Element("Phase", {"duration": "10.5"})
-        
+
         errors = validator.validate(element)
-        
+
         assert len(errors) == 0
 
     def test_validate_negative_speed(self):
         """Should error on negative speed"""
         validator = XoscDataTypeValidator()
         element = Element("Action", {"speed": "-10"})
-        
+
         errors = validator.validate(element)
-        
+
         assert len(errors) == 1
         assert "DATA_TYPE_ERROR" in errors[0]
         assert "non-negative" in errors[0]
@@ -88,9 +88,9 @@ class TestXoscDataTypeValidator:
         element2 = Element("Action", {"speed": "50.5"})
         root.add_child(element1)
         root.add_child(element2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_probability_out_of_range(self):
@@ -101,9 +101,9 @@ class TestXoscDataTypeValidator:
         element2 = Element("Action", {"probability": "1.1"})
         root.add_child(element1)
         root.add_child(element2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 2
         for error in errors:
             assert "DATA_TYPE_ERROR" in error
@@ -119,18 +119,18 @@ class TestXoscDataTypeValidator:
         root.add_child(element1)
         root.add_child(element2)
         root.add_child(element3)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_negative_distance(self):
         """Should error on negative distance"""
         validator = XoscDataTypeValidator()
         element = Element("Action", {"distance": "-5.0"})
-        
+
         errors = validator.validate(element)
-        
+
         assert len(errors) == 1
         assert "DATA_TYPE_ERROR" in errors[0]
         assert "non-negative" in errors[0]
@@ -139,18 +139,18 @@ class TestXoscDataTypeValidator:
         """Should accept non-negative distance"""
         validator = XoscDataTypeValidator()
         element = Element("Action", {"distance": "100.5"})
-        
+
         errors = validator.validate(element)
-        
+
         assert len(errors) == 0
 
     def test_validate_negative_time(self):
         """Should error on negative time (excluding AbsoluteTime)"""
         validator = XoscDataTypeValidator()
         element = Element("Action", {"time": "-1.0"})
-        
+
         errors = validator.validate(element)
-        
+
         assert len(errors) == 1
         assert "DATA_TYPE_ERROR" in errors[0]
 
@@ -158,9 +158,9 @@ class TestXoscDataTypeValidator:
         """Should not validate time attribute for AbsoluteTime element"""
         validator = XoscDataTypeValidator()
         element = Element("AbsoluteTime", {"time": "-1.0"})
-        
+
         errors = validator.validate(element)
-        
+
         # AbsoluteTime is excluded from time validation
         assert len(errors) == 0
 
@@ -172,9 +172,9 @@ class TestXoscDataTypeValidator:
         element2 = Element("Action", {"acceleration": "3.0"})
         root.add_child(element1)
         root.add_child(element2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_nested_elements(self):
@@ -185,9 +185,9 @@ class TestXoscDataTypeValidator:
         child = Element("LightStateAction", {"transitionTime": "-1.0"})
         root.add_child(parent)
         parent.add_child(child)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "DATA_TYPE_ERROR" in errors[0]
 
@@ -201,21 +201,21 @@ class TestXoscDataTypeValidator:
         root.add_child(element1)
         root.add_child(element2)
         root.add_child(element3)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 3
 
     def test_validate_invalid_numeric_format(self):
         """Should not error on invalid format (handled by schema validator)"""
         validator = XoscDataTypeValidator()
         element = Element("Action", {"speed": "not_a_number"})
-        
+
         errors = validator.validate(element)
-        
+
         # Type format validation is handled by schema structure validator
         assert len(errors) == 0
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

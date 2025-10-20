@@ -3,15 +3,19 @@ Plugin Manager for OpenSCENARIO Builder
 Handles plugin discovery, loading, and management
 """
 
-
 import importlib.util
 import inspect
 from typing import Dict, List, Any, Optional
 from pathlib import Path
 import logging
 from openscenario_builder.interfaces import (
-    IElementPlugin, IValidatorPlugin, IUIPlugin, IExportPlugin, IImportPlugin,
-    IElement, ISchemaInfo
+    IElementPlugin,
+    IValidatorPlugin,
+    IUIPlugin,
+    IExportPlugin,
+    IImportPlugin,
+    IElement,
+    ISchemaInfo,
 )
 
 logger = logging.getLogger(__name__)
@@ -20,7 +24,9 @@ logger = logging.getLogger(__name__)
 class PluginManager:
     """Manages loading and registration of plugins"""
 
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         self.element_plugins: Dict[str, IElementPlugin] = {}
         self.validator_plugins: Dict[str, IValidatorPlugin] = {}
         self.ui_plugins: Dict[str, IUIPlugin] = {}
@@ -46,7 +52,7 @@ class PluginManager:
             "validator": [],
             "ui": [],
             "export": [],
-            "import": []
+            "import": [],
         }
 
         for plugin_path in self.plugin_paths:
@@ -71,21 +77,28 @@ class PluginManager:
                     # Look for plugin classes
                     for name, obj in inspect.getmembers(module):
                         if inspect.isclass(obj):
-                            if issubclass(obj, IElementPlugin) and obj != IElementPlugin:
-                                discovered["element"].append(
-                                    f"{file_path.stem}.{name}")
-                            elif issubclass(obj, IValidatorPlugin) and obj != IValidatorPlugin:
+                            if (
+                                issubclass(obj, IElementPlugin)
+                                and obj != IElementPlugin
+                            ):
+                                discovered["element"].append(f"{file_path.stem}.{name}")
+                            elif (
+                                issubclass(obj, IValidatorPlugin)
+                                and obj != IValidatorPlugin
+                            ):
                                 discovered["validator"].append(
-                                    f"{file_path.stem}.{name}")
+                                    f"{file_path.stem}.{name}"
+                                )
                             elif issubclass(obj, IUIPlugin) and obj != IUIPlugin:
-                                discovered["ui"].append(
-                                    f"{file_path.stem}.{name}")
-                            elif issubclass(obj, IExportPlugin) and obj != IExportPlugin:
-                                discovered["export"].append(
-                                    f"{file_path.stem}.{name}")
-                            elif issubclass(obj, IImportPlugin) and obj != IImportPlugin:
-                                discovered["import"].append(
-                                    f"{file_path.stem}.{name}")
+                                discovered["ui"].append(f"{file_path.stem}.{name}")
+                            elif (
+                                issubclass(obj, IExportPlugin) and obj != IExportPlugin
+                            ):
+                                discovered["export"].append(f"{file_path.stem}.{name}")
+                            elif (
+                                issubclass(obj, IImportPlugin) and obj != IImportPlugin
+                            ):
+                                discovered["import"].append(f"{file_path.stem}.{name}")
 
                 except Exception as e:
                     logger.warning(f"Failed to inspect {file_path}: {e}")
@@ -99,7 +112,7 @@ class PluginManager:
             "validator": 0,
             "ui": 0,
             "export": 0,
-            "import": 0
+            "import": 0,
         }
 
         for plugin_path in self.plugin_paths:
@@ -118,7 +131,9 @@ class PluginManager:
         logger.info(f"Loaded plugins: {loaded_counts}")
         return loaded_counts
 
-    def _load_plugin_from_file(self, file_path: Path, loaded_counts: Dict[str, int]) -> None:
+    def _load_plugin_from_file(
+        self, file_path: Path, loaded_counts: Dict[str, int]
+    ) -> None:
         """Load plugins from a single file"""
         module_name = file_path.stem
 
@@ -144,11 +159,11 @@ class PluginManager:
                     if plugin.activated:
                         self.register_element_plugin(plugin)
                         loaded_counts["element"] += 1
-                        logger.info(
-                            f"Loaded element plugin: {plugin.metadata.name}")
+                        logger.info(f"Loaded element plugin: {plugin.metadata.name}")
                     else:
                         logger.info(
-                            f"Skipped deactivated element plugin: {plugin.metadata.name}")
+                            f"Skipped deactivated element plugin: {plugin.metadata.name}"
+                        )
 
                 elif issubclass(obj, IValidatorPlugin) and obj != IValidatorPlugin:
                     plugin = obj()
@@ -156,11 +171,11 @@ class PluginManager:
                     if plugin.activated:
                         self.register_validator_plugin(plugin)
                         loaded_counts["validator"] += 1
-                        logger.info(
-                            f"Loaded validator plugin: {plugin.metadata.name}")
+                        logger.info(f"Loaded validator plugin: {plugin.metadata.name}")
                     else:
                         logger.info(
-                            f"Skipped deactivated validator plugin: {plugin.metadata.name}")
+                            f"Skipped deactivated validator plugin: {plugin.metadata.name}"
+                        )
 
                 elif issubclass(obj, IUIPlugin) and obj != IUIPlugin:
                     plugin = obj()
@@ -168,11 +183,11 @@ class PluginManager:
                     if plugin.activated:
                         self.register_ui_plugin(plugin)
                         loaded_counts["ui"] += 1
-                        logger.info(
-                            f"Loaded UI plugin: {plugin.metadata.name}")
+                        logger.info(f"Loaded UI plugin: {plugin.metadata.name}")
                     else:
                         logger.info(
-                            f"Skipped deactivated UI plugin: {plugin.metadata.name}")
+                            f"Skipped deactivated UI plugin: {plugin.metadata.name}"
+                        )
 
                 elif issubclass(obj, IExportPlugin) and obj != IExportPlugin:
                     plugin = obj()
@@ -180,11 +195,11 @@ class PluginManager:
                     if plugin.activated:
                         self.register_export_plugin(plugin)
                         loaded_counts["export"] += 1
-                        logger.info(
-                            f"Loaded export plugin: {plugin.metadata.name}")
+                        logger.info(f"Loaded export plugin: {plugin.metadata.name}")
                     else:
                         logger.info(
-                            f"Skipped deactivated export plugin: {plugin.metadata.name}")
+                            f"Skipped deactivated export plugin: {plugin.metadata.name}"
+                        )
 
                 elif issubclass(obj, IImportPlugin) and obj != IImportPlugin:
                     plugin = obj()
@@ -192,15 +207,16 @@ class PluginManager:
                     if plugin.activated:
                         self.register_import_plugin(plugin)
                         loaded_counts["import"] += 1
-                        logger.info(
-                            f"Loaded import plugin: {plugin.metadata.name}")
+                        logger.info(f"Loaded import plugin: {plugin.metadata.name}")
                     else:
                         logger.info(
-                            f"Skipped deactivated import plugin: {plugin.metadata.name}")
+                            f"Skipped deactivated import plugin: {plugin.metadata.name}"
+                        )
 
             except Exception as e:
                 logger.error(
-                    f"Failed to instantiate plugin {name} from {file_path}: {e}")
+                    f"Failed to instantiate plugin {name} from {file_path}: {e}"
+                )
 
     def register_element_plugin(self, plugin: IElementPlugin) -> None:
         """Register an element plugin"""
@@ -245,24 +261,24 @@ class PluginManager:
         """Validate an element using its plugin"""
         plugin = self.element_plugins.get(element.tag)
         if plugin:
-                return plugin.validate(element)
+            return plugin.validate(element)
         return []
 
-    def validate_scenario(self, root_element: IElement, schema_info: ISchemaInfo) -> List[str]:
+    def validate_scenario(
+        self, root_element: IElement, schema_info: ISchemaInfo
+    ) -> List[str]:
         """Validate a scenario using all validator plugins"""
         errors = []
         for validator in self.validator_plugins.values():
             try:
-                validator_errors = validator.validate(
-                    root_element, schema_info)
+                validator_errors = validator.validate(root_element, schema_info)
                 errors.extend(validator_errors)
                 print(f"validator: {validator.get_name()}")
                 print(f"validator_errors: {validator_errors}")
 
             except Exception as e:
                 logger.error(f"Validator {validator.get_name()} failed: {e}")
-                errors.append(
-                    f"Validation error in {validator.get_name()}: {e}")
+                errors.append(f"Validation error in {validator.get_name()}: {e}")
 
         return errors
 
@@ -312,57 +328,61 @@ class PluginManager:
 
     def get_plugin_info(self) -> Dict[str, List[Dict[str, Any]]]:
         """Get information about all loaded plugins"""
-        info = {
-            "element": [],
-            "validator": [],
-            "ui": [],
-            "export": [],
-            "import": []
-        }
+        info = {"element": [], "validator": [], "ui": [], "export": [], "import": []}
 
         for plugin in self.element_plugins.values():
-            info["element"].append({
-                "name": plugin.metadata.name,
-                "version": plugin.metadata.version,
-                "description": plugin.metadata.description,
-                "author": plugin.metadata.author,
-                "element_name": plugin.get_element_name(),
-                "category": plugin.get_category()
-            })
+            info["element"].append(
+                {
+                    "name": plugin.metadata.name,
+                    "version": plugin.metadata.version,
+                    "description": plugin.metadata.description,
+                    "author": plugin.metadata.author,
+                    "element_name": plugin.get_element_name(),
+                    "category": plugin.get_category(),
+                }
+            )
 
         for plugin in self.validator_plugins.values():
-            info["validator"].append({
-                "name": plugin.metadata.name,
-                "version": plugin.metadata.version,
-                "description": plugin.metadata.description,
-                "author": plugin.metadata.author
-            })
+            info["validator"].append(
+                {
+                    "name": plugin.metadata.name,
+                    "version": plugin.metadata.version,
+                    "description": plugin.metadata.description,
+                    "author": plugin.metadata.author,
+                }
+            )
 
         for plugin in self.ui_plugins.values():
-            info["ui"].append({
-                "name": plugin.metadata.name,
-                "version": plugin.metadata.version,
-                "description": plugin.metadata.description,
-                "author": plugin.metadata.author
-            })
+            info["ui"].append(
+                {
+                    "name": plugin.metadata.name,
+                    "version": plugin.metadata.version,
+                    "description": plugin.metadata.description,
+                    "author": plugin.metadata.author,
+                }
+            )
 
         for format_ext, plugin in self.export_plugins.items():
-            info["export"].append({
-                "name": plugin.metadata.name,
-                "version": plugin.metadata.version,
-                "description": plugin.metadata.description,
-                "author": plugin.metadata.author,
-                "format": format_ext
-            })
+            info["export"].append(
+                {
+                    "name": plugin.metadata.name,
+                    "version": plugin.metadata.version,
+                    "description": plugin.metadata.description,
+                    "author": plugin.metadata.author,
+                    "format": format_ext,
+                }
+            )
 
         for format_ext, plugin in self.import_plugins.items():
-            info["import"].append({
-                "name": plugin.metadata.name,
-                "version": plugin.metadata.version,
-                "description": plugin.metadata.description,
-                "author": plugin.metadata.author,
-                "format": format_ext
-            })
+            info["import"].append(
+                {
+                    "name": plugin.metadata.name,
+                    "version": plugin.metadata.version,
+                    "description": plugin.metadata.description,
+                    "author": plugin.metadata.author,
+                    "format": format_ext,
+                }
+            )
 
         return info
 
@@ -406,13 +426,7 @@ class PluginManager:
 
     def get_plugin_activation_status(self) -> Dict[str, List[Dict[str, Any]]]:
         """Get activation status of all discovered plugins"""
-        status = {
-            "element": [],
-            "validator": [],
-            "ui": [],
-            "export": [],
-            "import": []
-        }
+        status = {"element": [], "validator": [], "ui": [], "export": [], "import": []}
 
         for plugin_path in self.plugin_paths:
             if not plugin_path.exists():
@@ -437,49 +451,72 @@ class PluginManager:
                     for name, obj in inspect.getmembers(module):
                         if inspect.isclass(obj):
                             try:
-                                if issubclass(obj, IElementPlugin) and obj != IElementPlugin:
+                                if (
+                                    issubclass(obj, IElementPlugin)
+                                    and obj != IElementPlugin
+                                ):
                                     plugin = obj()
-                                    status["element"].append({
-                                        "name": plugin.metadata.name,
-                                        "activated": plugin.activated,
-                                        "file": str(file_path),
-                                        "class": name
-                                    })
-                                elif issubclass(obj, IValidatorPlugin) and obj != IValidatorPlugin:
+                                    status["element"].append(
+                                        {
+                                            "name": plugin.metadata.name,
+                                            "activated": plugin.activated,
+                                            "file": str(file_path),
+                                            "class": name,
+                                        }
+                                    )
+                                elif (
+                                    issubclass(obj, IValidatorPlugin)
+                                    and obj != IValidatorPlugin
+                                ):
                                     plugin = obj()
-                                    status["validator"].append({
-                                        "name": plugin.metadata.name,
-                                        "activated": plugin.activated,
-                                        "file": str(file_path),
-                                        "class": name
-                                    })
+                                    status["validator"].append(
+                                        {
+                                            "name": plugin.metadata.name,
+                                            "activated": plugin.activated,
+                                            "file": str(file_path),
+                                            "class": name,
+                                        }
+                                    )
                                 elif issubclass(obj, IUIPlugin) and obj != IUIPlugin:
                                     plugin = obj()
-                                    status["ui"].append({
-                                        "name": plugin.metadata.name,
-                                        "activated": plugin.activated,
-                                        "file": str(file_path),
-                                        "class": name
-                                    })
-                                elif issubclass(obj, IExportPlugin) and obj != IExportPlugin:
+                                    status["ui"].append(
+                                        {
+                                            "name": plugin.metadata.name,
+                                            "activated": plugin.activated,
+                                            "file": str(file_path),
+                                            "class": name,
+                                        }
+                                    )
+                                elif (
+                                    issubclass(obj, IExportPlugin)
+                                    and obj != IExportPlugin
+                                ):
                                     plugin = obj()
-                                    status["export"].append({
-                                        "name": plugin.metadata.name,
-                                        "activated": plugin.activated,
-                                        "file": str(file_path),
-                                        "class": name
-                                    })
-                                elif issubclass(obj, IImportPlugin) and obj != IImportPlugin:
+                                    status["export"].append(
+                                        {
+                                            "name": plugin.metadata.name,
+                                            "activated": plugin.activated,
+                                            "file": str(file_path),
+                                            "class": name,
+                                        }
+                                    )
+                                elif (
+                                    issubclass(obj, IImportPlugin)
+                                    and obj != IImportPlugin
+                                ):
                                     plugin = obj()
-                                    status["import"].append({
-                                        "name": plugin.metadata.name,
-                                        "activated": plugin.activated,
-                                        "file": str(file_path),
-                                        "class": name
-                                    })
+                                    status["import"].append(
+                                        {
+                                            "name": plugin.metadata.name,
+                                            "activated": plugin.activated,
+                                            "file": str(file_path),
+                                            "class": name,
+                                        }
+                                    )
                             except Exception as e:
                                 logger.warning(
-                                    f"Failed to inspect plugin {name} from {file_path}: {e}")
+                                    f"Failed to inspect plugin {name} from {file_path}: {e}"
+                                )
 
                 except Exception as e:
                     logger.warning(f"Failed to inspect {file_path}: {e}")

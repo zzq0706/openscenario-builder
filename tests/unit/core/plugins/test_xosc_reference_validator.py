@@ -19,9 +19,9 @@ class TestXoscReferenceValidator:
         action = Element("Action", {"entityRef": "Ego"})
         root.add_child(entity)
         root.add_child(action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_entity_reference_missing(self):
@@ -30,9 +30,9 @@ class TestXoscReferenceValidator:
         root = Element("Root")
         action = Element("Action", {"entityRef": "NonExistent"})
         root.add_child(action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "REFERENCE_ERROR" in errors[0]
         assert "NonExistent" in errors[0]
@@ -44,9 +44,9 @@ class TestXoscReferenceValidator:
         root = Element("Root")
         action = Element("Action", {"entityRef": "$EntityName"})
         root.add_child(action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_variable_reference_exists(self):
@@ -57,9 +57,9 @@ class TestXoscReferenceValidator:
         var_action = Element("VariableAction", {"variableRef": "Speed"})
         root.add_child(var_decl)
         root.add_child(var_action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_variable_reference_missing(self):
@@ -68,9 +68,9 @@ class TestXoscReferenceValidator:
         root = Element("Root")
         var_action = Element("VariableAction", {"variableRef": "NonExistent"})
         root.add_child(var_action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "REFERENCE_ERROR" in errors[0]
         assert "NonExistent" in errors[0]
@@ -83,9 +83,9 @@ class TestXoscReferenceValidator:
         action = Element("Action", {"speed": "$InitSpeed"})
         root.add_child(param_decl)
         root.add_child(action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_parameter_reference_missing(self):
@@ -94,9 +94,9 @@ class TestXoscReferenceValidator:
         root = Element("Root")
         action = Element("Action", {"speed": "$NonExistent"})
         root.add_child(action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "REFERENCE_ERROR" in errors[0]
         assert "NonExistent" in errors[0]
@@ -109,9 +109,9 @@ class TestXoscReferenceValidator:
         condition = Element("Condition", {"actRef": "Act1"})
         root.add_child(act)
         root.add_child(condition)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_storyboard_reference_missing(self):
@@ -120,9 +120,9 @@ class TestXoscReferenceValidator:
         root = Element("Root")
         condition = Element("Condition", {"actRef": "NonExistent"})
         root.add_child(condition)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "REFERENCE_ERROR" in errors[0]
         assert "NonExistent" in errors[0]
@@ -132,23 +132,27 @@ class TestXoscReferenceValidator:
         validator = XoscReferenceValidator()
         root = Element("Root")
         controller = Element("TrafficSignalController", {"name": "Controller1"})
-        action = Element("TrafficSignalStateAction", {"trafficSignalControllerRef": "Controller1"})
+        action = Element(
+            "TrafficSignalStateAction", {"trafficSignalControllerRef": "Controller1"}
+        )
         root.add_child(controller)
         root.add_child(action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_traffic_signal_controller_reference_missing(self):
         """Should error when traffic signal controller doesn't exist"""
         validator = XoscReferenceValidator()
         root = Element("Root")
-        action = Element("TrafficSignalStateAction", {"trafficSignalControllerRef": "NonExistent"})
+        action = Element(
+            "TrafficSignalStateAction", {"trafficSignalControllerRef": "NonExistent"}
+        )
         root.add_child(action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "REFERENCE_ERROR" in errors[0]
         assert "NonExistent" in errors[0]
@@ -161,9 +165,9 @@ class TestXoscReferenceValidator:
         action = Element("TrafficSignalStateAction", {"signalId": "Signal1"})
         root.add_child(signal)
         root.add_child(action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_traffic_signal_id_missing(self):
@@ -172,9 +176,9 @@ class TestXoscReferenceValidator:
         root = Element("Root")
         action = Element("TrafficSignalStateAction", {"signalId": "NonExistent"})
         root.add_child(action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 1
         assert "REFERENCE_ERROR" in errors[0]
         assert "NonExistent" in errors[0]
@@ -191,9 +195,9 @@ class TestXoscReferenceValidator:
         root.add_child(pedestrian)
         root.add_child(action1)
         root.add_child(action2)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_nested_references(self):
@@ -204,14 +208,14 @@ class TestXoscReferenceValidator:
         parent = Element("Parent")
         child = Element("Child")
         action = Element("Action", {"entityRef": "Ego"})
-        
+
         root.add_child(entity)
         root.add_child(parent)
         parent.add_child(child)
         child.add_child(action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 0
 
     def test_validate_multiple_errors(self):
@@ -224,11 +228,11 @@ class TestXoscReferenceValidator:
         root.add_child(action1)
         root.add_child(action2)
         root.add_child(var_action)
-        
+
         errors = validator.validate(root)
-        
+
         assert len(errors) == 3
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

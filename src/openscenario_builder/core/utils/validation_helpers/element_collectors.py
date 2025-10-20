@@ -14,11 +14,11 @@ class ElementCollector:
     def collect_by_tags(root: IElement, tags: List[str]) -> Dict[str, IElement]:
         """
         Collect elements with specific tags from the element tree
-        
+
         Args:
             root: Root element to start collection from
             tags: List of element tags to collect
-            
+
         Returns:
             Dictionary mapping element names to elements
         """
@@ -41,7 +41,7 @@ class ElementCollector:
         """Collect all entity definitions in the scenario"""
         return ElementCollector.collect_by_tags(
             root,
-            ["ScenarioObject", "EntityObject", "Vehicle", "Pedestrian", "MiscObject"]
+            ["ScenarioObject", "EntityObject", "Vehicle", "Pedestrian", "MiscObject"],
         )
 
     @staticmethod
@@ -58,15 +58,16 @@ class ElementCollector:
     def collect_storyboard_elements(root: IElement) -> Dict[str, IElement]:
         """Collect all storyboard elements (Acts, Maneuvers, Events, etc.)"""
         return ElementCollector.collect_by_tags(
-            root,
-            ["Act", "ManeuverGroup", "Maneuver", "Event", "Action"]
+            root, ["Act", "ManeuverGroup", "Maneuver", "Event", "Action"]
         )
 
     @staticmethod
-    def collect_traffic_elements(root: IElement) -> tuple[Dict[str, IElement], Dict[str, IElement]]:
+    def collect_traffic_elements(
+        root: IElement,
+    ) -> tuple[Dict[str, IElement], Dict[str, IElement]]:
         """
         Collect traffic signal controllers and signals
-        
+
         Returns:
             Tuple of (controllers, signals) dictionaries
         """

@@ -16,13 +16,11 @@ from .plugin_manager import PluginManager
 
 __all__ = [
     # Base classes
-    'PluginMetadata',
-
+    "PluginMetadata",
     # Plugin implementations
-    'XoscScenarioValidatorPlugin',
-    'ImportPlugin',
-    'ExportPlugin',
-
+    "XoscScenarioValidatorPlugin",
+    "ImportPlugin",
+    "ExportPlugin",
     # Plugin management
-    'PluginManager',
+    "PluginManager",
 ]

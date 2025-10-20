@@ -13,22 +13,24 @@ def create_simple_scenario():
     scenario = Element("OpenSCENARIO")
 
     # Add FileHeader
-    file_header = Element("FileHeader", {
-        "revMajor": "1",
-        "revMinor": "3",
-        "date": "2025-10-12T00:00:00",
-        "description": "Simple example scenario",
-        "author": "OpenSCENARIO Builder"
-    })
+    file_header = Element(
+        "FileHeader",
+        {
+            "revMajor": "1",
+            "revMinor": "3",
+            "date": "2025-10-12T00:00:00",
+            "description": "Simple example scenario",
+            "author": "OpenSCENARIO Builder",
+        },
+    )
     scenario.add_child(file_header)
 
     # Add ParameterDeclarations
     param_decls = Element("ParameterDeclarations")
-    param = Element("ParameterDeclaration", {
-        "name": "EgoSpeed",
-        "parameterType": "double",
-        "value": "50.0"
-    })
+    param = Element(
+        "ParameterDeclaration",
+        {"name": "EgoSpeed", "parameterType": "double", "value": "50.0"},
+    )
     param_decls.add_child(param)
     scenario.add_child(param_decls)
 
@@ -47,10 +49,9 @@ def create_simple_scenario():
 
     # Add Ego vehicle
     scenario_object = Element("ScenarioObject", {"name": "Ego"})
-    catalog_ref = Element("CatalogReference", {
-        "catalogName": "VehicleCatalog",
-        "entryName": "car_ego"
-    })
+    catalog_ref = Element(
+        "CatalogReference", {"catalogName": "VehicleCatalog", "entryName": "car_ego"}
+    )
     scenario_object.add_child(catalog_ref)
     entities.add_child(scenario_object)
 
@@ -68,14 +69,10 @@ def create_simple_scenario():
     private_action = Element("PrivateAction")
     teleport_action = Element("TeleportAction")
     position = Element("Position")
-    world_position = Element("WorldPosition", {
-        "x": "0.0",
-        "y": "0.0",
-        "z": "0.0",
-        "h": "0.0",
-        "p": "0.0",
-        "r": "0.0"
-    })
+    world_position = Element(
+        "WorldPosition",
+        {"x": "0.0", "y": "0.0", "z": "0.0", "h": "0.0", "p": "0.0", "r": "0.0"},
+    )
     position.add_child(world_position)
     teleport_action.add_child(position)
     private_action.add_child(teleport_action)
@@ -102,7 +99,9 @@ if __name__ == "__main__":
 
     # Create scenario
     scenario = create_simple_scenario()
-    print(f"✓ Scenario structure created with {len(scenario.children)} top-level elements")
+    print(
+        f"✓ Scenario structure created with {len(scenario.children)} top-level elements"
+    )
 
     # Export to file
     exporter = ExportPlugin()
