@@ -4,7 +4,7 @@ Parses XSD files and maintains element hierarchy and relationships
 """
 
 import xml.etree.ElementTree as ET
-from typing import Dict, List, Optional, Set, Tuple, Mapping
+from typing import Dict, List, Optional, Tuple, Mapping
 from pathlib import Path
 from openscenario_builder.interfaces import (
     IElementDefinition,
@@ -397,11 +397,13 @@ class XSDParser:
                 group_name = child[6:]  # Remove "GROUP:" prefix
                 if group_name in groups:
                     group = groups[group_name]
-                    # For choice groups, we keep the group reference to handle choice logic
+                    # For choice groups, we keep the group reference
+                    # to handle choice logic
                     if group.is_choice:
                         expanded_children.append(child)
                     else:
-                        # For sequence/all groups, recursively expand the group's children
+                        # For sequence/all groups, recursively expand
+                        # the group's children
                         expanded_children.extend(
                             self._expand_group_references(group.children, groups)
                         )
@@ -677,13 +679,12 @@ def parse_openscenario_schema(xsd_path: str) -> ISchemaInfo:
 
 if __name__ == "__main__":
     # Test the parser
-    import os
-    from pathlib import Path
+    from pathlib import Path as PathForTesting
 
     # Find the schema file relative to the current file
     # Try to find the schema file
     # First try: schemas/ directory at project root (recommended location)
-    current_dir = Path(__file__).parent
+    current_dir = PathForTesting(__file__).parent
     project_root = current_dir.parent.parent.parent  # Go up to project root
     schema_path = project_root / "schemas" / "OpenSCENARIO_v1_3.xsd"
 

@@ -3,12 +3,10 @@ Schema-Aware Element Factory for OpenSCENARIO Builder
 Provides creation-time validation and type-safe element construction
 """
 
-from typing import Dict, List, Optional, Set, Any
+from typing import Dict, List, Optional, Any
 from openscenario_builder.interfaces import (
     ISchemaInfo,
     IElement,
-    IElementDefinition,
-    IChildElementInfo,
 )
 from openscenario_builder.core.model.element import Element
 
@@ -22,7 +20,6 @@ from openscenario_builder.core.utils.validators import (
 class ElementFactory:
     """
     Factory for creating schema-validated elements.
-
     This factory reuses existing validators from core.utils.validators to ensure
     consistent validation across the codebase:
     - XoscSchemaStructureValidator: element structure, attributes, children
@@ -43,7 +40,6 @@ class ElementFactory:
         self.strict = strict
         # Track validation errors using element object as key
         self._validation_errors: Dict[IElement, List[str]] = {}
-
         # Initialize validators (reuse existing validation logic)
         self._schema_validator = XoscSchemaStructureValidator()
         self._datatype_validator = XoscDataTypeValidator()
@@ -139,7 +135,8 @@ class ElementFactory:
                     attrs[attr_name] = ""
             else:
                 raise ValueError(
-                    f"Element '{tag}' is missing required attributes: {', '.join(missing_attrs)}"
+                    f"Element '{tag}' is missing required attributes: "
+                    f"{', '.join(missing_attrs)}"
                 )
 
         return self.create(tag, attrs)
@@ -225,7 +222,6 @@ class ElementFactory:
             List of validation errors (empty if valid)
         """
         errors = []
-
         parent_def = self.schema_info.elements.get(parent_tag)
         if not parent_def:
             errors.append(f"Parent element '{parent_tag}' not defined in schema")
@@ -267,7 +263,6 @@ class ElementFactory:
         element_def = self.schema_info.elements.get(tag)
         if not element_def:
             return None
-
         return {
             "name": tag,
             "attributes": self.get_all_attributes(tag),

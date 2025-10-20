@@ -4,10 +4,7 @@ Handles exporting scenarios to various formats
 """
 
 from typing import List
-from pathlib import Path
 import xml.etree.ElementTree
-from xml.etree.ElementTree import ElementTree, tostring
-from xml.dom import minidom
 
 try:
     from .plugin_metadata import PluginMetadata
@@ -48,7 +45,8 @@ class ExportPlugin(IExportPlugin):
     def export_scenario(self, scenario: IElement, output_path: str) -> bool:
         """Export scenario to XML format"""
         try:
-            # Use the Element's built-in XML conversion which handles namespaces properly
+            # Use the Element's built-in XML conversion
+            # which handles namespaces properly
             formatted_xml = scenario.to_xml_string(pretty=True, encoding="unicode")
 
             # Write to file

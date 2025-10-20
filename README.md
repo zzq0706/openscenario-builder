@@ -1,6 +1,6 @@
 # OpenSCENARIO Builder
 
-A professional, extensible tool for creating and editing OpenSCENARIO files with a modern Python architecture.
+A professional, extensible tool for creating and editing and validating OpenSCENARIO files with a modern Python architecture.
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -11,36 +11,8 @@ A professional, extensible tool for creating and editing OpenSCENARIO files with
 - **Schema-Driven**: Automatically generates element definitions from OpenSCENARIO XSD schemas
 - **Plugin Architecture**: Extensible through custom plugins for validation, import/export, and UI
 - **Qt-based UI**: Modern desktop application with intuitive interface
-- **CLI Validator**: Command-line tool for batch validation and CI/CD integration
-- **Real-time Validation**: Comprehensive schema validation with detailed error messages
+- **Real-time Validation**: Comprehensive scenario validation against schema with detailed error messages
 - **Cross-Platform**: Works on Windows, macOS, and Linux
-
-## Architecture
-
-```
-openscenario-builder/
-├── src/
-│   └── openscenario_builder/     # Main package
-│       ├── __init__.py
-│       ├── __main__.py           # Entry point
-│       ├── interfaces/           # Interface definitions (contracts)
-│       ├── core/                 # Core implementation
-│       │   ├── schema/           # XSD schema parsing
-│       │   ├── model/            # Element data models
-│       │   └── plugins/          # Plugin system
-│       └── ui/                   # User interface
-│           └── qt/               # Qt-based UI components
-├── tests/                        # Test suite
-├── examples/                     # Example scripts
-├── docs/                         # Documentation
-├── .github/                      # GitHub workflows and templates
-├── pyproject.toml                # Project configuration
-├── README.md                     # This file
-├── LICENSE                       # MIT License
-├── CONTRIBUTING.md               # Contribution guidelines
-├── CODE_OF_CONDUCT.md            # Code of conduct
-└── CHANGELOG.md                  # Version history
-```
 
 ## Installation
 
@@ -75,75 +47,24 @@ pip install openscenario-builder
 
 ## Quick Start
 
-### GUI Application
-
-Launch the Qt-based graphical interface:
-
-```bash
-openscenario-builder
-```
-
-Or with Python module syntax:
-
-```bash
+### Run the QT-based application
 python -m openscenario_builder
-```
-
-### CLI Validator
-
-Validate OpenSCENARIO files from the command line (perfect for CI/CD):
-
-```bash
-# Validate a single file
-openscenario-validate scenario.xosc
-
-# Validate multiple files
-openscenario-validate scenario1.xosc scenario2.xosc
-
-# Validate all files in a directory
-openscenario-validate scenarios/
-
-# Verbose output with detailed errors
-openscenario-validate --verbose scenario.xosc
-
-# Use in CI/CD pipelines
-openscenario-validate --verbose scenarios/ && echo "All scenarios valid!"
-```
-
-See [CLI_USAGE.md](docs/CLI_USAGE.md) for detailed documentation and CI/CD integration examples.
 
 ## Examples
 
-- **create_validated_scenario.py**: Schema-aware element creation with validation
-- **demo_schema_aware.py**: Interactive demonstration of validation benefits
 - **create_simple_scenario.py**: Basic OpenSCENARIO file creation
+- **create_validated_scenario.py**: Schema-aware element creation with validation
 - **validate_scenario.py**: Validate existing XOSC files
 
 ```bash
+# Basic creation
+python examples/create_simple_scenario.py
+
 # Schema-aware creation
 python examples/create_validated_scenario.py
 
-# Validation demonstration
-python examples/demo_schema_aware.py
-
 # Validate a scenario
 python examples/validate_scenario.py scenario.xosc schemas/OpenSCENARIO_v1_3.xsd
-```
-
-## Plugin System
-
-Create custom plugins to extend functionality:
-
-```python
-from openscenario_builder.interfaces import IElementPlugin
-
-class MyPlugin(IElementPlugin):
-    def get_element_name(self) -> str:
-        return "MyElement"
-
-    def validate(self, element) -> List[str]:
-        # Custom validation
-        return []
 ```
 
 ## License

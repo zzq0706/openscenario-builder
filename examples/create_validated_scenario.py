@@ -97,6 +97,7 @@ if __name__ == "__main__":
     # Export scenario
     exporter = ExportPlugin()
     success = exporter.export_scenario(scenario2, "schema_validated_scenario.xosc")
-    print(
-        f"✓ Exported: schema_validated_scenario.xosc" if success else "✗ Export failed"
+    result_msg = (
+        "✓ Exported: schema_validated_scenario.xosc" if success else "✗ Export failed"
     )
+    print(result_msg)

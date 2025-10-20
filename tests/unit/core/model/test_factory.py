@@ -16,7 +16,6 @@ try:
 except ImportError:
     FACTORY_AVAILABLE = False
     pytestmark = pytest.mark.skip(reason="ElementFactory not available on this branch")
-from openscenario_builder.core.model.element import Element
 from openscenario_builder.core.schema.parser import (
     AttributeDefinition,
     ChildElementInfo,

@@ -3,9 +3,9 @@ Enhanced Element Model for OpenSCENARIO Builder
 Provides a robust, validated element structure with metadata support
 """
 
-from openscenario_builder.interfaces import ISchemaInfo, IElement, IElementMetadata
-from typing import Dict, List, Optional, Any, Union
-from xml.etree.ElementTree import Element as XMLElement, SubElement, tostring
+from openscenario_builder.interfaces import IElement, IElementMetadata
+from typing import Dict, List, Optional, Any
+from xml.etree.ElementTree import Element as XMLElement, tostring
 from xml.dom import minidom
 from datetime import datetime
 
@@ -264,4 +264,7 @@ class Element(IElement):
 
     def __repr__(self) -> str:
         """Detailed representation"""
-        return f"Element(tag='{self._tag}', attrs={self._attrs}, children={len(self._children)})"
+        return (
+            f"Element(tag='{self._tag}', "
+            f"attrs={self._attrs}, children={len(self._children)})"
+        )

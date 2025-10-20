@@ -4,8 +4,7 @@ Handles importing scenarios from various formats
 """
 
 from typing import List, Optional
-from pathlib import Path
-from xml.etree.ElementTree import ElementTree, Element as XMLElement, parse
+from xml.etree.ElementTree import Element as XMLElement, parse
 
 try:
     from .plugin_metadata import PluginMetadata
