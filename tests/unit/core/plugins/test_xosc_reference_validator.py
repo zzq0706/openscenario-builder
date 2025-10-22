@@ -233,6 +233,167 @@ class TestXoscReferenceValidator:
 
         assert len(errors) == 3
 
+    def test_validate_expression_with_single_parameter(self):
+        """Should validate expressions with single parameter and calculations"""
+        validator = XoscReferenceValidator()
+        root = Element("Root")
+        param_decl = Element("ParameterDeclaration", {"name": "Ego_Start_Velocity"})
+        action = Element("Action", {"speed": "${$Ego_Start_Velocity/3.6}"})
+        root.add_child(param_decl)
+        root.add_child(action)
+
+        errors = validator.validate(root)
+
+        assert len(errors) == 0
+
+    def test_validate_expression_with_multiple_parameters(self):
+        """Should validate expressions with multiple parameters and complex
+        calculations"""
+        validator = XoscReferenceValidator()
+        root = Element("Root")
+        param1 = Element(
+            "ParameterDeclaration", {"name": "CrossingVehicle_InitDistance_m"}
+        )
+        param2 = Element("ParameterDeclaration", {"name": "P_CrossHead_m"})
+        param3 = Element(
+            "ParameterDeclaration", {"name": "CrossingVehicle_InitSpeed_mps"}
+        )
+        action = Element(
+            "Action",
+            {
+                "value": (
+                    "${($CrossingVehicle_InitDistance_m - $P_CrossHead_m) / "
+                    "$CrossingVehicle_InitSpeed_mps}"
+                )
+            },
+        )
+        root.add_child(param1)
+        root.add_child(param2)
+        root.add_child(param3)
+        root.add_child(action)
+
+        errors = validator.validate(root)
+
+        assert len(errors) == 0
+
+    def test_validate_expression_with_missing_parameter(self):
+        """Should error when parameter in expression doesn't exist"""
+        validator = XoscReferenceValidator()
+        root = Element("Root")
+        param_decl = Element("ParameterDeclaration", {"name": "Ego_Start_Velocity"})
+        action = Element("Action", {"speed": "${$Ego_Start_Velocity/$NonExistent}"})
+        root.add_child(param_decl)
+        root.add_child(action)
+
+        errors = validator.validate(root)
+
+        assert len(errors) == 1
+        assert "REFERENCE_ERROR" in errors[0]
+        assert "NonExistent" in errors[0]
+        assert "expression" in errors[0].lower()
+
+    def test_validate_expression_with_multiple_missing_parameters(self):
+        """Should error for each missing parameter in complex expression"""
+        validator = XoscReferenceValidator()
+        root = Element("Root")
+        param_decl = Element("ParameterDeclaration", {"name": "P_CrossHead_m"})
+        action = Element(
+            "Action", {"value": "${($Missing1 - $P_CrossHead_m) / $Missing2}"}
+        )
+        root.add_child(param_decl)
+        root.add_child(action)
+
+        errors = validator.validate(root)
+
+        assert len(errors) == 2
+        assert any("Missing1" in error for error in errors)
+        assert any("Missing2" in error for error in errors)
+
+    def test_validate_expression_with_operations(self):
+        """Should validate expressions with various mathematical operations"""
+        validator = XoscReferenceValidator()
+        root = Element("Root")
+        param1 = Element("ParameterDeclaration", {"name": "A"})
+        param2 = Element("ParameterDeclaration", {"name": "B"})
+        param3 = Element("ParameterDeclaration", {"name": "C"})
+        # Test with +, -, *, /, parentheses, and decimal numbers
+        action = Element("Action", {"value": "${($A + $B) * $C / 2.5 - 1.0}"})
+        root.add_child(param1)
+        root.add_child(param2)
+        root.add_child(param3)
+        root.add_child(action)
+
+        errors = validator.validate(root)
+
+        assert len(errors) == 0
+
+    def test_extract_parameter_names_from_expression(self):
+        """Should correctly extract parameter names from expressions"""
+        validator = XoscReferenceValidator()
+
+        # Test simple expression
+        params = validator._extract_parameter_names_from_expression("${$Param1/3.6}")
+        assert params == ["Param1"]
+
+        # Test complex expression
+        params = validator._extract_parameter_names_from_expression(
+            "${($A - $B_Value) / $C_123}"
+        )
+        assert set(params) == {"A", "B_Value", "C_123"}
+
+        # Test non-expression (should return empty list)
+        params = validator._extract_parameter_names_from_expression("$SimpleParam")
+        assert params == []
+
+    def test_validate_literal_expression_no_parameters(self):
+        """Should validate literal expressions without parameter references"""
+        validator = XoscReferenceValidator()
+        root = Element("Root")
+        # No parameter declarations needed
+        action = Element("Action", {"value": "${30/3.6}"})
+        root.add_child(action)
+
+        errors = validator.validate(root)
+
+        assert len(errors) == 0
+
+    def test_validate_complex_literal_expression(self):
+        """Should validate complex literal expressions with various operations"""
+        validator = XoscReferenceValidator()
+        root = Element("Root")
+        action = Element("Action", {"value": "${(100 - 30) / 15 + 2.5}"})
+        root.add_child(action)
+
+        errors = validator.validate(root)
+
+        assert len(errors) == 0
+
+    def test_validate_mixed_literal_and_parameter_expression(self):
+        """Should validate expressions mixing literals and parameters"""
+        validator = XoscReferenceValidator()
+        root = Element("Root")
+        param_decl = Element("ParameterDeclaration", {"name": "Speed"})
+        action = Element("Action", {"value": "${$Speed + 10.5}"})
+        root.add_child(param_decl)
+        root.add_child(action)
+
+        errors = validator.validate(root)
+
+        assert len(errors) == 0
+
+    def test_extract_no_parameters_from_literal_expression(self):
+        """Should extract no parameters from literal expressions"""
+        validator = XoscReferenceValidator()
+
+        # Test various literal expressions
+        test_cases = ["${30/3.6}", "${100 + 50}", "${(10 * 5) - 3.14}", "${1.5}"]
+
+        for expression in test_cases:
+            params = validator._extract_parameter_names_from_expression(expression)
+            assert (
+                params == []
+            ), f"Expected no parameters for {expression}, got {params}"
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

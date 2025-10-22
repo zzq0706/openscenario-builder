@@ -3,6 +3,7 @@ XOSC Reference Validator
 Validates all reference-related checks (entities, parameters, variables, storyboard, traffic signals)
 """
 
+import re
 from typing import Dict, List, Optional
 
 from openscenario_builder.core.utils.validation_helpers import ElementCollector
@@ -12,6 +13,31 @@ from openscenario_builder.interfaces import IElement, ISchemaInfo
 
 class XoscReferenceValidator:
     """Validates that all references can be resolved to their declarations"""
+
+    @staticmethod
+    def _extract_parameter_names_from_expression(expression: str) -> List[str]:
+        """
+        Extract parameter names from an expression like ${$Param1 + $Param2 / 3.6}
+
+        Args:
+            expression: Expression string (e.g., "${$Param1/3.6}" or "${($Param1 - $Param2) / $Param3}")
+
+        Returns:
+            List of parameter names without the $ prefix
+        """
+        # Check if it's an expression (starts with ${ and ends with })
+        if not (expression.startswith("${") and expression.endswith("}")):
+            return []
+
+        # Extract content inside ${ and }
+        content = expression[2:-1]
+
+        # Find all parameter references ($ followed by identifier characters)
+        # Pattern matches: $ followed by one or more alphanumeric or underscore characters
+        param_pattern = r"\$([A-Za-z_][A-Za-z0-9_]*)"
+        matches = re.findall(param_pattern, content)
+
+        return matches
 
     def validate(
         self, element: IElement, schema_info: Optional[ISchemaInfo] = None
@@ -152,18 +178,41 @@ class XoscReferenceValidator:
                     and attr_value
                     and attr_value.startswith("$")
                 ):
-                    param_name = attr_value[1:]  # Remove $ prefix
-                    if param_name not in parameters:
-                        available = (
-                            ", ".join(parameters.keys()) if parameters else "None"
+                    # Check if it's an expression (e.g., "${$Param1/3.6}" or "${($Param1 - $Param2) / $Param3}")
+                    if attr_value.startswith("${") and attr_value.endswith("}"):
+                        # It's an expression - extract and validate all parameter references within it
+                        param_names = self._extract_parameter_names_from_expression(
+                            attr_value
                         )
-                        error_msg = (
-                            f"REFERENCE_ERROR: Parameter reference '{param_name}' in element '{elem.tag}' "
-                            f"attribute '{attr_name}' cannot be resolved. "
-                            f"Available parameters: {available}. "
-                            f"Fix: Use one of the available parameter names or define the referenced parameter."
-                        )
-                        errors.append(error_msg)
+                        for param_name in param_names:
+                            if param_name not in parameters:
+                                available = (
+                                    ", ".join(parameters.keys())
+                                    if parameters
+                                    else "None"
+                                )
+                                error_msg = (
+                                    f"REFERENCE_ERROR: Parameter reference '{param_name}' in expression "
+                                    f"'{attr_value}' in element '{elem.tag}' attribute '{attr_name}' "
+                                    f"cannot be resolved. "
+                                    f"Available parameters: {available}. "
+                                    f"Fix: Use one of the available parameter names or define the referenced parameter."
+                                )
+                                errors.append(error_msg)
+                    else:
+                        # Simple parameter reference (e.g., "$ParamName")
+                        param_name = attr_value[1:]  # Remove $ prefix
+                        if param_name not in parameters:
+                            available = (
+                                ", ".join(parameters.keys()) if parameters else "None"
+                            )
+                            error_msg = (
+                                f"REFERENCE_ERROR: Parameter reference '{param_name}' in element '{elem.tag}' "
+                                f"attribute '{attr_name}' cannot be resolved. "
+                                f"Available parameters: {available}. "
+                                f"Fix: Use one of the available parameter names or define the referenced parameter."
+                            )
+                            errors.append(error_msg)
 
             for child in elem.children:
                 validate_recursive(child)
