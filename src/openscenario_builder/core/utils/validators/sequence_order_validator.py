@@ -70,7 +70,6 @@ class XoscSequenceOrderValidator:
         # Build position map: element_name -> list of positions in expected sequence
         expected_positions = self._build_position_map(expected_sequence)
 
-        # Track the last position we've seen for order validation
         last_position = -1
 
         for idx, child in enumerate(element.children):
