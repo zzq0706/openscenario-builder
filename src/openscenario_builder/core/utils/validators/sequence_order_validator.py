@@ -3,7 +3,7 @@ XOSC Sequence Order Validator
 Validates that child elements in sequence content models appear in the correct order
 """
 
-from typing import List, Optional, Dict, Set
+from typing import List, Optional, Dict
 from openscenario_builder.interfaces import IElement, ISchemaInfo, IElementDefinition
 
 
@@ -198,11 +198,6 @@ class XoscSequenceOrderValidator:
                     seen_elements.add(elem)
                 if len(expected_at_position) >= 5:  # Limit suggestions
                     break
-
-        # Get the position of the child element in the expected sequence
-        child_expected_pos = (
-            expected_sequence.index(child.tag) if child.tag in expected_sequence else -1
-        )
 
         # Build a helpful error message
         if expected_at_position:

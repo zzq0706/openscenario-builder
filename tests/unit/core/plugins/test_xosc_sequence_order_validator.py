@@ -3,7 +3,6 @@ Unit tests for XOSC Sequence Order Validator
 Tests XoscSequenceOrderValidator plugin
 """
 
-import pytest
 from openscenario_builder.core.utils.validators import XoscSequenceOrderValidator
 from openscenario_builder.core.model.element import Element
 from openscenario_builder.core.schema.parser import (
@@ -116,7 +115,7 @@ class TestXoscSequenceOrderValidator:
         assert any("FirstChild" in error for error in errors)
 
     def test_validate_optional_elements_omitted(self):
-        """Should not error when optional elements are omitted but order is maintained"""
+        """Should not error when optional elements omitted but order maintained"""
         validator = XoscSequenceOrderValidator()
 
         # Create parent with only some children (skipping optional ones)
@@ -465,7 +464,8 @@ class TestXoscSequenceOrderValidator:
         """Test realistic Act structure from OpenSCENARIO schema"""
         validator = XoscSequenceOrderValidator()
 
-        # Create Act element with correct sequence: ManeuverGroup, StartTrigger, StopTrigger
+        # Create Act element with correct sequence:
+        # ManeuverGroup, StartTrigger, StopTrigger
         act = Element("Act", {"name": "TestAct"})
         maneuver_group = Element(
             "ManeuverGroup", {"name": "MG1", "maximumExecutionCount": "1"}
