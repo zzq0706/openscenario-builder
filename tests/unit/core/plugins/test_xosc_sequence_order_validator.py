@@ -134,9 +134,15 @@ class TestXoscSequenceOrderValidator:
             children=["FirstChild", "SecondChild", "ThirdChild"],
             content_model_type="sequence",
             child_occurrence_info={
-                "FirstChild": ChildElementInfo(name="FirstChild", min_occur=1, max_occur="1"),
-                "SecondChild": ChildElementInfo(name="SecondChild", min_occur=0, max_occur="1"),
-                "ThirdChild": ChildElementInfo(name="ThirdChild", min_occur=1, max_occur="1"),
+                "FirstChild": ChildElementInfo(
+                    name="FirstChild", min_occur=1, max_occur="1"
+                ),
+                "SecondChild": ChildElementInfo(
+                    name="SecondChild", min_occur=0, max_occur="1"
+                ),
+                "ThirdChild": ChildElementInfo(
+                    name="ThirdChild", min_occur=1, max_occur="1"
+                ),
             },
         )
         child1_def = ElementDefinition(name="FirstChild", attributes=[], children=[])
@@ -181,7 +187,9 @@ class TestXoscSequenceOrderValidator:
             children=["Child"],
             content_model_type="sequence",
             child_occurrence_info={
-                "Child": ChildElementInfo(name="Child", min_occur=1, max_occur="unbounded"),
+                "Child": ChildElementInfo(
+                    name="Child", min_occur=1, max_occur="unbounded"
+                ),
             },
         )
         child_def = ElementDefinition(name="Child", attributes=[], children=[])
@@ -459,7 +467,9 @@ class TestXoscSequenceOrderValidator:
 
         # Create Act element with correct sequence: ManeuverGroup, StartTrigger, StopTrigger
         act = Element("Act", {"name": "TestAct"})
-        maneuver_group = Element("ManeuverGroup", {"name": "MG1", "maximumExecutionCount": "1"})
+        maneuver_group = Element(
+            "ManeuverGroup", {"name": "MG1", "maximumExecutionCount": "1"}
+        )
         start_trigger = Element("StartTrigger")
         stop_trigger = Element("StopTrigger")
 
@@ -470,15 +480,19 @@ class TestXoscSequenceOrderValidator:
         # Define schema
         act_def = ElementDefinition(
             name="Act",
-            attributes=[
-                AttributeDefinition(name="name", type="String", required=True)
-            ],
+            attributes=[AttributeDefinition(name="name", type="String", required=True)],
             children=["ManeuverGroup", "StartTrigger", "StopTrigger"],
             content_model_type="sequence",
             child_occurrence_info={
-                "ManeuverGroup": ChildElementInfo(name="ManeuverGroup", min_occur=1, max_occur="unbounded"),
-                "StartTrigger": ChildElementInfo(name="StartTrigger", min_occur=0, max_occur="1"),
-                "StopTrigger": ChildElementInfo(name="StopTrigger", min_occur=0, max_occur="1"),
+                "ManeuverGroup": ChildElementInfo(
+                    name="ManeuverGroup", min_occur=1, max_occur="unbounded"
+                ),
+                "StartTrigger": ChildElementInfo(
+                    name="StartTrigger", min_occur=0, max_occur="1"
+                ),
+                "StopTrigger": ChildElementInfo(
+                    name="StopTrigger", min_occur=0, max_occur="1"
+                ),
             },
         )
         mg_def = ElementDefinition(name="ManeuverGroup", attributes=[], children=[])
@@ -509,7 +523,9 @@ class TestXoscSequenceOrderValidator:
         # Create Act element with WRONG sequence: StartTrigger before ManeuverGroup
         act = Element("Act", {"name": "TestAct"})
         start_trigger = Element("StartTrigger")  # Wrong position
-        maneuver_group = Element("ManeuverGroup", {"name": "MG1", "maximumExecutionCount": "1"})
+        maneuver_group = Element(
+            "ManeuverGroup", {"name": "MG1", "maximumExecutionCount": "1"}
+        )
         stop_trigger = Element("StopTrigger")
 
         act.add_child(start_trigger)  # Should come AFTER ManeuverGroup
@@ -519,9 +535,7 @@ class TestXoscSequenceOrderValidator:
         # Define schema (same as above)
         act_def = ElementDefinition(
             name="Act",
-            attributes=[
-                AttributeDefinition(name="name", type="String", required=True)
-            ],
+            attributes=[AttributeDefinition(name="name", type="String", required=True)],
             children=["ManeuverGroup", "StartTrigger", "StopTrigger"],
             content_model_type="sequence",
         )
@@ -546,4 +560,6 @@ class TestXoscSequenceOrderValidator:
 
         assert len(errors) >= 1
         assert any("SEQUENCE_ORDER_ERROR" in error for error in errors)
-        assert any("ManeuverGroup" in error or "StartTrigger" in error for error in errors)
+        assert any(
+            "ManeuverGroup" in error or "StartTrigger" in error for error in errors
+        )

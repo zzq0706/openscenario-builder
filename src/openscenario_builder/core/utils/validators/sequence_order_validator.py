@@ -134,9 +134,7 @@ class XoscSequenceOrderValidator:
 
         return expanded
 
-    def _expand_choice_group(
-        self, group_def, schema_info: ISchemaInfo
-    ) -> List[str]:
+    def _expand_choice_group(self, group_def, schema_info: ISchemaInfo) -> List[str]:
         """
         Expand a choice group - all choices can appear at same position
         Returns all possible element names from the choice group
@@ -202,7 +200,9 @@ class XoscSequenceOrderValidator:
                     break
 
         # Get the position of the child element in the expected sequence
-        child_expected_pos = expected_sequence.index(child.tag) if child.tag in expected_sequence else -1
+        child_expected_pos = (
+            expected_sequence.index(child.tag) if child.tag in expected_sequence else -1
+        )
 
         # Build a helpful error message
         if expected_at_position:
