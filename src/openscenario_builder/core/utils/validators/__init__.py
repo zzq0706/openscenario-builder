@@ -9,6 +9,7 @@ from .datatype_validator import XoscDataTypeValidator
 from .structure_validator import XoscStructureValidator
 from .uniqueness_validator import XoscUniquenessValidator
 from .min_occur_validator import XoscMinOccurValidator
+from .sequence_order_validator import XoscSequenceOrderValidator
 
 __all__ = [
     "XoscSchemaStructureValidator",
@@ -17,4 +18,5 @@ __all__ = [
     "XoscStructureValidator",
     "XoscUniquenessValidator",
     "XoscMinOccurValidator",
+    "XoscSequenceOrderValidator",
 ]

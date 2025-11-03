@@ -23,7 +23,7 @@ class TestXoscScenarioValidatorPlugin:
         validator = XoscScenarioValidatorPlugin()
 
         assert validator.metadata.name == "XOSC Scenario Comprehensive Validator"
-        assert validator.metadata.version == "3.1.0"
+        assert validator.metadata.version == "3.2.0"
         assert validator.metadata.tags and "comprehensive" in validator.metadata.tags
 
     def test_activation_state(self):

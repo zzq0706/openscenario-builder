@@ -2,13 +2,14 @@
 XOSC Scenario Validator Plugin for OpenSCENARIO Builder
 Comprehensive validator that orchestrates specialized sub-validators
 
-This is a refactored version (v3.1.0) that delegates to specialized validators:
+This is a refactored version (v3.2.0) that delegates to specialized validators:
 - XoscSchemaStructureValidator: Element, attribute, and children validation
 - XoscReferenceValidator: Entity, parameter, variable, and storyboard references
 - XoscDataTypeValidator: Data type constraints and domain rules
 - XoscStructureValidator: Document structure requirements
 - XoscUniquenessValidator: Name uniqueness constraints
 - XoscMinOccurValidator: Minimum occurrence constraints validation
+- XoscSequenceOrderValidator: Sequence order validation for sequence content models
 """
 
 from typing import List, Optional
@@ -25,6 +26,7 @@ from openscenario_builder.core.utils.validators import (
     XoscStructureValidator,
     XoscUniquenessValidator,
     XoscMinOccurValidator,
+    XoscSequenceOrderValidator,
 )
 
 from openscenario_builder.interfaces import IValidatorPlugin, IElement, ISchemaInfo
@@ -46,6 +48,7 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
     - Document structure validation
     - Name uniqueness validation
     - Minimum occurrence constraint validation
+    - Sequence order validation (elements in sequence content models)
     """
 
     def __init__(self):
@@ -58,6 +61,7 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
         self._structure_validator = XoscStructureValidator()
         self._uniqueness_validator = XoscUniquenessValidator()
         self._min_occur_validator = XoscMinOccurValidator()
+        self._sequence_order_validator = XoscSequenceOrderValidator()
 
     @property
     def activated(self) -> bool:
@@ -73,11 +77,11 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
     def metadata(self) -> PluginMetadata:
         return PluginMetadata(
             name="XOSC Scenario Comprehensive Validator",
-            version="3.1.0",
+            version="3.2.0",
             description=(
                 "Comprehensive validator orchestrating specialized validators "
                 "for schema, references, data types, structure, uniqueness, "
-                "and occurrence constraints"
+                "occurrence constraints, and sequence order"
             ),
             author="Ziqi Zhou",
             tags=["validation", "schema", "xosc", "comprehensive"],
@@ -93,9 +97,10 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
         1. Schema structure - catches basic structural errors first
         2. Document structure - validates OpenSCENARIO requirements
         3. Minimum occurrence - validates required elements are present
-        4. References - ensures all references can be resolved
-        5. Data types - validates domain-specific constraints
-        6. Uniqueness - checks name uniqueness constraints
+        4. Sequence order - validates element ordering for sequence content models
+        5. References - ensures all references can be resolved
+        6. Data types - validates domain-specific constraints
+        7. Uniqueness - checks name uniqueness constraints
 
         Args:
             element: Root element to validate
@@ -110,6 +115,7 @@ class XoscScenarioValidatorPlugin(IValidatorPlugin):
         errors.extend(self._schema_validator.validate(element, schema_info))
         errors.extend(self._structure_validator.validate(element, schema_info))
         errors.extend(self._min_occur_validator.validate(element, schema_info))
+        errors.extend(self._sequence_order_validator.validate(element, schema_info))
         errors.extend(self._reference_validator.validate(element, schema_info))
         errors.extend(self._datatype_validator.validate(element, schema_info))
         errors.extend(self._uniqueness_validator.validate(element, schema_info))
