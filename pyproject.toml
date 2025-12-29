@@ -61,6 +61,7 @@ Repository = "https://github.com/your-org/openscenario-builder.git"
 
 [project.scripts]
 openscenario-builder = "openscenario_builder.__main__:main"
+openscenario-validate = "openscenario_builder.cli.validator:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
