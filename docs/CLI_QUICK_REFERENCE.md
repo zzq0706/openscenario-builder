@@ -1,10 +1,10 @@
 # OpenSCENARIO Validator - Quick Reference
 
+The `openscenario-validate` command-line tool provides a simple way to validate OpenSCENARIO files against the schema. It's designed for both manual use and integration into CI/CD pipelines.
+
 ## Installation
 
-```bash
-pip install openscenario-builder
-```
+See [README.md](../README.md) for complete documentation.
 
 ## Basic Commands
 
@@ -76,7 +76,3 @@ openscenario-validate --fail-fast *.xosc
 # Script: Parse output
 openscenario-validate --quiet scenarios/
 ```
-
-## Full Documentation
-
-See [CLI_USAGE.md](CLI_USAGE.md) for complete documentation.

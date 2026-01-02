@@ -275,8 +275,8 @@ class PluginManager:
             try:
                 validator_errors = validator.validate(root_element, schema_info)
                 errors.extend(validator_errors)
-                print(f"validator: {validator.get_name()}")
-                print(f"validator_errors: {validator_errors}")
+                # print(f"validator: {validator.get_name()}")
+                # print(f"validator_errors: {validator_errors}")
 
             except Exception as e:
                 logger.error(f"Validator {validator.get_name()} failed: {e}")
