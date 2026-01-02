@@ -20,9 +20,7 @@ A professional, extensible tool for creating and editing and validating OpenSCEN
 
 Watch how to validate OpenSCENARIO scenario files using the `openscenario-validate` command-line tool:
 
-[![Validation Demo](./sources/validation/validate_scenario_example.mp4)](./sources/validation/validate_scenario_example.mp4)
-
-**Direct link**: [Validation Demo Video](./sources/validation/validate_scenario_example.mp4)
+![Validation Demo](./sources/validation/validate_scenario_example.gif)
 
 
 ## Installation
